@@ -20,35 +20,32 @@ namespace DAL
             return goodsInfoTable;
         }
 
+        //按类别查询商品
         public DataTable GoodsInfoForTypeQuery(int _goodsTypeSubclassId) {
             string goodsInfoForTypeQuery = "Select goods_id,goods_name,goods_image,goods_price_now from Goods_Info where goods_type_subclass_id = '" + _goodsTypeSubclassId + "'";
             DataTable goodsInfoForTypeTable = _sqlHelper.ExecuteDataTable(goodsInfoForTypeQuery);
             return goodsInfoForTypeTable;
         }
 
+        //按关键字查询商品
         public DataTable GoodsInfoForKeywordsQuery(string _keywords) {
             string goodsInfoForKeywordsQuery = "Select goods_id,goods_name,goods_image,goods_price_now from Goods_Info where goods_name like '%" + _keywords + "%'";
             DataTable goodsInfoForKeywordsTable = _sqlHelper.ExecuteDataTable(goodsInfoForKeywordsQuery);
             return goodsInfoForKeywordsTable;
         }
-        //以下三个方法：对于某个商品的管理页面
+
+                  //按id查询某商品信息
         public DataTable GoodsInfoQuery(int _goodsId) {
             string goodsInfoQuery = "Select * from Goods_Info where goods_id = '" + _goodsId + "'";
             DataTable goodsInfoTable = _sqlHelper.ExecuteDataTable(goodsInfoQuery);
             return goodsInfoTable;
         }
-
-        public DataTable GoodsRemarkQuery(int _goodsId) {
-            string goodsRemarkQuery = "Select * from Goods_Remark where goods_id = '" + _goodsId + "'";
-            DataTable goodsRemarkTable = _sqlHelper.ExecuteDataTable(goodsRemarkQuery);
-            return goodsRemarkTable;
-        }
-
-        public DataTable GoodsRemarkUserQuery(int _goodsRemarkId)
-        {
-            string goodsRemarkUserQuery = "Select user_name,user_isForbided from User_Acc where user_id = (Select user_id from Goods_Remark where goods_remark_id ='" + _goodsRemarkId + "')";
-            DataTable goodsRemarkUserTable = _sqlHelper.ExecuteDataTable(goodsRemarkUserQuery);
-            return goodsRemarkUserTable;
+               
+             //按id更改某商品信息
+        public int GoodsInfoUpdate(GoodsInfo _goodsInfo) {
+            string goodsUpdate = "Update Goods_Info set goods_name = '" + _goodsInfo.GoodsName + "',goods_image = '" + _goodsInfo.GoodsImage + "',goods_intro = '" + _goodsInfo.GoodsIntro + "',goods_price_original = '" + _goodsInfo.GoodsPriceOriginal + "',goods_price_now = '" + _goodsInfo.GoodsPriceNow + "',goods_storage = '" + _goodsInfo.GoodsStorage + "',goods_status = '" + _goodsInfo.GoodsStatus + "' where goods_id = '" + _goodsInfo.GoodsId + "'";
+            int rows = _sqlHelper.ExecuteNonQuery(goodsUpdate);
+            return rows;
         }
 
         //添加商品

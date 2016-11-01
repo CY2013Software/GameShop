@@ -103,36 +103,84 @@ namespace TestWeb.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult GoodsUpdate(int goods_id)
+        public ActionResult GoodsUpdate(string goods_id)
         {
             List<GoodsInfo> _goodsInfoList = new List<GoodsInfo>();
-            //获取商品分类
-            DataTable _goodsInfoTable = new GoodsInfoDAL().GoodsInfoQuery(goods_id);
+            List<GoodsRemark> _goodsRemarkList = new List<GoodsRemark>();
+            List<UserAcc> _userAccList = new List<UserAcc>();
 
-            foreach (DataRow item in _goodsInfoTable.Rows)
+            if (!string.IsNullOrEmpty(goods_id))
             {
-                GoodsInfo _goodsInfo = new GoodsInfo();
-                _goodsInfo.GoodsName = item["goods_name"].ToString();
-                _goodsInfo.GoodsImage = item["goods_image"].ToString();
-                _goodsInfo.GoodsIntro = item["goods_intro"].ToString();
-                _goodsInfo.GoodsPriceOriginal = (decimal)item["goods_price_original"];
-                _goodsInfo.GoodsPriceNow = (decimal)item["goods_price_now"];
-                _goodsInfo.GoodsStorage = (int)item["goods_storage"];
-                _goodsInfo.GoodsStatus = (bool)item["goods_status"];
-                _goodsInfoList.Add(_goodsInfo);
+                DataTable _goodsInfoTable = new GoodsInfoDAL().GoodsInfoQuery(int.Parse(goods_id));
+                DataTable _goodsRemarkTable = new GoodsRemarkDAL().GoodsRemarkQuery(int.Parse(goods_id));
+
+                foreach (DataRow item in _goodsInfoTable.Rows)
+                {
+                    GoodsInfo _goodsInfo = new GoodsInfo();
+                    _goodsInfo.GoodsId = (int)item["goods_id"];
+                    _goodsInfo.GoodsName = item["goods_name"].ToString();
+                    _goodsInfo.GoodsImage = item["goods_image"].ToString();
+                    _goodsInfo.GoodsIntro = item["goods_intro"].ToString();
+                    _goodsInfo.GoodsPriceOriginal = (decimal)item["goods_price_original"];
+                    _goodsInfo.GoodsPriceNow = (decimal)item["goods_price_now"];
+                    _goodsInfo.GoodsStorage = (int)item["goods_storage"];
+                    _goodsInfo.GoodsStatus = (bool)item["goods_status"];
+                    _goodsInfoList.Add(_goodsInfo);
+                }
+
+                foreach (DataRow item in _goodsRemarkTable.Rows)
+                {
+                    DataTable _userAccTable = new UserAccDAL().GoodsRemarkUserQuery((int)item["goods_remark_id"]);
+                    foreach (DataRow userItem in _userAccTable.Rows)
+                    {
+                        UserAcc _userAcc = new UserAcc();
+                        _userAcc.UserName = userItem["user_name"].ToString();
+                        _userAcc.UserIsForbided = (bool)userItem["user_isForbided"];
+                        _userAccList.Add(_userAcc);
+                    }
+                    GoodsRemark _goodsRemark = new GoodsRemark();
+                    _goodsRemark.GoodsRemarkId = (int)item["goods_remark_id"];
+                    _goodsRemark.GoodsRemarkFirst = item["goods_remark_first"].ToString();
+                    _goodsRemark.GoodsRemarkAdd = item["goods_remark_add"].ToString();
+                    _goodsRemarkList.Add(_goodsRemark);
+                }
             }
+
+            ViewData["GoodsInfo"] = _goodsInfoList;
+            ViewData["GoodsRemark"] = _goodsRemarkList;
+            ViewData["UserAcc"] = _userAccList;
             return View();
         }
 
-        ///// <summary>
-        ///// 商品修改页面
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpPost]
-        //public ActionResult GoodsUpdate()
-        //{
-        //    return View();
-        //}
+        /// <summary>
+        /// 商品修改页面
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult GoodsUpdate(string id,string goodsRemarkId,GoodsInfo _goodsInfo)
+        {
+            if (!string.IsNullOrEmpty(id)) {
+                int rows = new GoodsRemarkDAL().GoodsRemarkDelete(int.Parse(id), int.Parse(goodsRemarkId));
+                if (rows > 0)
+                {
+                    return RedirectToAction("GoodsUpdate", "GoodsManage");
+                }
+                else {
+                    throw new Exception("删除失败");
+                }
+            }else if(string.IsNullOrEmpty(_goodsInfo.GoodsName)){
+                int rows = new GoodsInfoDAL().GoodsInfoUpdate(_goodsInfo);
+                if (rows > 0)
+                {
+                    return RedirectToAction("GoodsUpdate", "GoodsManage");
+                }
+                else {
+                    throw new Exception("更改失败");
+                }
+            }
+
+            return RedirectToAction("GoodsUpdate", "GoodsManage");
+        }
 
         /// <summary>
         /// 添加商品页面，从商品查询页面进入

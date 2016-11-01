@@ -41,10 +41,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GoodsInfoDAL.cs" />
+    <Compile Include="GoodsRemarkDAL.cs" />
     <Compile Include="GoodsTypeDAL.cs" />
     <Compile Include="GoodsTypeSubclassDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLHelper.cs" />
+    <Compile Include="UserAccDAL.cs" />
+    <Compile Include="UserInfoDAL.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Models\Models.csproj">
