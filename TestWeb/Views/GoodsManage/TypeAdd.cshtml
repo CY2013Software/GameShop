@@ -1,0 +1,58 @@
+﻿@using shop.Models;
+@{
+    List<GoodsType> _goodsTypeList = (List<GoodsType>)ViewData["GoodsType"];
+    ViewBag.Title = "TypeAdd";
+}
+
+
+<br/><br/><strong style="font-size:20px">增加商品类别</strong><br/><br/>
+
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div class="tabbable" id="tabs-577505">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#panel-736772" data-toggle="tab">增加大类别</a>
+                    </li>
+                    <li>
+                        <a href="#panel-136542" data-toggle="tab">增加小类别</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="panel-736772">
+                        <label style="margin-top:10px">请输入要增加的大类别名称：</label>
+                        <form id="type_add" action="/GoodsManage/TypeAdd" method="post">
+                            <input id="goodsType_insert" type="text" name="GoodsTypeName" />
+                            <input type="submit" value="增加"/>
+                        </form>
+                    </div>
+                    <div class="tab-pane" id="panel-136542">
+                        <div class="panel-group" id="panel-503730">
+                            @{
+                                foreach (GoodsType item in _goodsTypeList)
+                                {
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <a class="panel-title collapsed" data-toggle="collapse" data-parent="#panel-503730" href="#@(item.GoodsTypeId)">@(item.GoodsTypeName)</a>
+                                        </div>
+                                        <div id="@(item.GoodsTypeId)" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <label>请输入要增加的子类别名称：</label>
+                                                <form id="TypeSub_add" action="/GoodsManage/TypeAdd" method="post">
+                                                    <input value="@(item.GoodsTypeId)" name="GoodsTypeId" style="display:none;" />
+                                                    <input name="GoodsTypeSubclassName"/>
+                                                    <input type="submit" value="增加" />
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

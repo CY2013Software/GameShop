@@ -1,0 +1,160 @@
+﻿@using DAL;
+@using shop.Models;
+@using System.Data;
+@{
+    List<GoodsType> _goodsTypeList = (List<GoodsType>)ViewData["GoodsType"];
+    ViewBag.Title = "GoodsAdd";
+}
+
+<script src="~/Scripts/ajaxfileupload.js"></script>
+<script type="text/javascript">
+    function setSubclassId(subclassId, subclassName) {
+        var typeSubclassId = document.getElementById("goods_typeSubclassId");
+        typeSubclassId.value = subclassId;
+
+
+        var typeSubclassName = document.getElementById("goods_typeSubclassText");
+        typeSubclassName.value = subclassName;
+    }
+
+    function CheckIsEmpty()
+    {
+        var typeSubclassId = document.getElementById("goods_typeSubclassId").value;//类别
+        var goodsName = document.getElementById("goods_name").value;//名称
+        var goodsImg = document.getElementById("GoodsImage").value;//图片路径
+        var goodsIntro = document.getElementById("goods_intro").value;//商品简介
+        var goodsPrice = document.getElementById("goods_price").value;//商品单价
+        var goodsStorage = document.getElementById("goods_storage").value;//库存
+
+        if (typeSubclassId == "" || typeSubclassId == null)
+        {
+            alert("类别不能为空");
+            return false;
+        }
+        if (goodsName == "" || goodsName == null) {
+            alert("商品名称不能为空");
+            return false;
+        }
+        if (goodsImg == "" || goodsImg == null) {
+            alert("商品图片不能为空");
+            return false;
+        }
+        if (goodsIntro == "" || goodsIntro == null) {
+            alert("商品简介不能为空");
+            return false;
+        }
+        if (goodsPrice == "" || goodsPrice == null) {
+            alert("商品单价不能为空");
+            return false;
+        }
+        if (goodsStorage == "" || goodsStorage == null) {
+            alert("库存数量不能为空");
+            return false;
+        }
+
+        //提示提交成功
+        alert("添加商品成功");
+
+        //提交表单
+        document.getElementById("goods_add").submit();
+
+    }
+
+
+    $(function () {
+        //点击事件 js onclick
+        $("#btnUpload").click(function () {
+            //上传图片
+            $.ajaxFileUpload({
+                url: '/GoodsManage/UploadImage', //上传文件的后台方法，告诉ajaxFileUpload
+                secureuri: false, //一般设置为false
+                fileElementId: 'fileUpload', //文件上传控件的Id  <input type="file" id="fileUpload" name="file" />
+                dataType: 'TEXT', //返回值类型 一般设置为json
+                success: function (data, status)  //服务器成功响应处理函数
+                {
+                    $("#imgReLook").attr("src", data);    //当上传成功后显示图片，data就是上传后的访问路径
+                    $("#GoodsImage").val(data);    //当上传成功后显示图片，data就是上传后的访问路径
+                }
+            })
+        })
+    });
+
+</script>
+
+
+<h2>添加商品</h2>
+
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div class="form-group">
+                <label for="exampleInputEmail1">商品类别</label>
+            </div>
+            <nav class="navbar navbar-default" role="navigation">
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        @{
+                            foreach (GoodsType item in _goodsTypeList)
+                            {
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">@(item.GoodsTypeName)<strong class="caret"></strong></a>
+                                    <ul class="dropdown-menu">
+                                        @{
+                                List<GoodsTypeSubclass> _goodsTypeSubclassList = new List<GoodsTypeSubclass>();
+                                DataTable _goodsTypeSubclassTable = new GoodsTypeSubclassDAL().GoodsTypeSubclassQuery(item.GoodsTypeId);
+
+                                foreach (DataRow rowItem in _goodsTypeSubclassTable.Rows)
+                                {
+                                    GoodsTypeSubclass _goodsTypeSubclass = new GoodsTypeSubclass();
+                                    _goodsTypeSubclass.GoodsTypeSubclassId = (int)rowItem["goods_type_subclass_id"];
+                                    _goodsTypeSubclass.GoodsTypeSubclassName = rowItem["goods_type_subclass_name"].ToString();
+                                    _goodsTypeSubclassList.Add(_goodsTypeSubclass);
+                                }
+
+                                foreach (GoodsTypeSubclass subclassItem in _goodsTypeSubclassList)
+                                {
+                                    <li>
+                                        <a href="javascript:setSubclassId('@(subclassItem.GoodsTypeSubclassId)','@(subclassItem.GoodsTypeSubclassName)')">@(subclassItem.GoodsTypeSubclassName)</a>
+                                    </li>
+                                }
+
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </nav>
+            <form role="form" id="goods_add" action="/GoodsManage/GoodsAdd" method="post">
+                <div class="form-group" style="display:none;">
+                    <label for="exampleInputEmail1">商品类别ID</label><input type="text" id="goods_typeSubclassId" class="form-control" name="GoodsTypeSubclassId" />
+                </div>
+                <div class="form-group">
+                    <input type="text" id="goods_typeSubclassText" class="form-control" name="GoodsTypeSubclassText" />
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">商品名称</label><input type="text" id="goods_name" class="form-control" name="GoodsName" />
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputFile">商品图片</label><p><input type="file" id="fileUpload" name="fileUpload"/></p>
+                    <input id="btnUpload" type="button" value="上传" />
+                    <p><img id="imgReLook" alt="上传成功后回显" src="" width="120" height="120" /></p>
+                    <input type="hidden" name="GoodsImage" id="GoodsImage" />
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">商品简介</label><textarea id="goods_intro" class="form-control" form="goods_add" name="GoodsIntro" cols=40 rows=4 wrap="soft"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>商品单价</label><input type="text" id="goods_price" class="form-control" name="GoodsPriceNow" />
+                </div>
+                <div class="form-group">
+                    <label>库存数量</label><input type="text" id="goods_storage" class="form-control" name="GoodsStorage" />
+                </div>
+
+                <button type="button" class="btn btn-default" onclick="javascript:CheckIsEmpty()">确认</button>
+            </form>
+
+        </div>
+    </div>
+</div>
