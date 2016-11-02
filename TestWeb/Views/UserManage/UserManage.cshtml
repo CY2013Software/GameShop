@@ -1,7 +1,137 @@
-﻿
+﻿@using shop.Models;
+
 @{
     ViewBag.Title = "UserManage";
+    List<UserAcc> _UserAccList = (List<UserAcc>)ViewData["UsserAcc"];
+    List<UserInfo> _UserInfoList = (List<UserInfo>)ViewData["UserInfo"];
 }
 
-<h2>UserManage</h2>
+<style type="text/css">
+    .wal {
+        margin: 0 auto;
+    }
 
+    .ulist {
+        overflow: hidden;
+        /*border: 1px solid #ccc;*/
+    }
+
+        .ulist li {
+            margin-top: 10px;
+            list-style-type: none;
+        }
+
+        .imgDiv{
+            margin-right: 60px;
+            /*border: 1px solid #f00;*/
+            float: left;
+            height: 200px;
+            width: 18%;
+        }
+
+            .infoDiv{
+                float:left;
+                height:200px;
+            }
+
+</style>
+
+<h2>会员管理</h2>
+
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <nav class="navbar navbar-default" role="navigation">
+                <div class="navbar-header">
+                    <form class="navbar-form navbar-left" role="search" action="/UserManage/UserManage" method="get">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="search_box"/>
+                        </div> <button type="submit" class="btn btn-default">查询</button>
+                    </form>
+                </div>
+                
+            </nav>
+        </div>
+    </div>
+</div>
+
+
+<div class="wal">
+    <div class="ulist" v="@(_UserAccList.Count)">
+        <ul>
+            @{
+                if (_UserAccList != null && _UserAccList.Count > 0)
+                {
+                    foreach (UserAcc item in _UserAccList)
+                    {
+                        if(_UserInfoList != null &&  _UserInfoList.Count > 0){
+                        foreach( UserInfo infoItem in _UserInfoList){
+                        <li>
+                            <div>
+                                <div class="imgDiv">
+                                    @{
+                            if (!string.IsNullOrEmpty(infoItem.UserImage)) { 
+                                        <img src="@(infoItem.UserImage)" />
+                                    }
+                                    }
+                                
+                                </div>
+                                <div class="infoDiv">
+                                    <strong>@(item.UserName)</strong>&nbsp;&nbsp;&nbsp;&nbsp;
+                                    @{
+                                        if (infoItem.UserGender == false)
+                                        {
+                                            <strong>男&nbsp;&nbsp;&nbsp;&nbsp;</strong> 
+                                    }
+                                    else if (infoItem.UserGender == true)
+                                    {
+                                        <strong>女&nbsp;&nbsp;&nbsp;&nbsp;</strong>
+                                    }
+                            if (item.UserIsForbided == true) { 
+                                <span style="color:blue">已锁定</span>
+                            }
+                            else if (item.UserIsForbided == false)
+                            {
+                                <form action="/UserManage/UserManage" method="post">
+                                    <input name="user_id" value="@(item.UserId.ToString())" style="display:none"/>
+                                    <input type="submit" value="锁定会员"/>
+                                    </form>
+                            }
+                            }
+                                  <br/>
+                                    <span>真实姓名：@(infoItem.UserRealname)</span><br/>
+                                    <span>电话：@(infoItem.UserPhone)</span><br/>
+                                    <span>邮箱：@(item.UserEmail)</span>
+                                </div>
+                            </div>
+                        </li>
+                        }
+                        }
+                        else {
+                            <li>
+                              <strong>@(item.UserName)</strong>&nbsp;&nbsp;&nbsp;&nbsp;
+                            @{
+                            if (item.UserIsForbided == true) {
+                                <span style="color:blue">已锁定</span>
+                            }
+                            else if (item.UserIsForbided == false)
+                            {
+                                <form action="/UserManage/UserManage" method="post">
+                                    <input name="user_id" value="@(item.UserId.ToString())" style="display:none" />
+                                    <input type="submit" value="锁定会员" />
+                                </form>
+                            }
+                            }</li>
+                    }
+                }
+                }
+                else
+                {
+                    <li><span>暂无查询结果</span></li>
+                }
+            }
+
+        </ul>
+    </div>
+    <div style="clear:both;"></div>
+</div>

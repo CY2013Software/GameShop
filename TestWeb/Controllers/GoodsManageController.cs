@@ -121,7 +121,13 @@ namespace TestWeb.Controllers
                     _goodsInfo.GoodsName = item["goods_name"].ToString();
                     _goodsInfo.GoodsImage = item["goods_image"].ToString();
                     _goodsInfo.GoodsIntro = item["goods_intro"].ToString();
-                    _goodsInfo.GoodsPriceOriginal = (decimal)item["goods_price_original"];
+                    if (!string.IsNullOrEmpty(item["goods_price_original"].ToString()))
+                    {
+                        _goodsInfo.GoodsPriceOriginal = (decimal)item["goods_price_original"];
+                    }
+                    else { 
+                        _goodsInfo.GoodsPriceOriginal = new decimal(0); 
+                    }
                     _goodsInfo.GoodsPriceNow = (decimal)item["goods_price_now"];
                     _goodsInfo.GoodsStorage = (int)item["goods_storage"];
                     _goodsInfo.GoodsStatus = (bool)item["goods_status"];
@@ -166,16 +172,16 @@ namespace TestWeb.Controllers
                     return RedirectToAction("GoodsUpdate", "GoodsManage");
                 }
                 else {
-                    throw new Exception("删除失败");
+                    throw new Exception("删除评论失败");
                 }
-            }else if(string.IsNullOrEmpty(_goodsInfo.GoodsName)){
+            }else if(!string.IsNullOrEmpty(_goodsInfo.GoodsName)){
                 int rows = new GoodsInfoDAL().GoodsInfoUpdate(_goodsInfo);
                 if (rows > 0)
                 {
                     return RedirectToAction("GoodsUpdate", "GoodsManage");
                 }
                 else {
-                    throw new Exception("更改失败");
+                    throw new Exception("更改商品信息失败");
                 }
             }
 
