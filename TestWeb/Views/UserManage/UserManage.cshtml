@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "UserManage";
-    List<UserAcc> _UserAccList = (List<UserAcc>)ViewData["UsserAcc"];
+    List<UserAcc> _UserAccList = (List<UserAcc>)ViewData["UserAcc"];
     List<UserInfo> _UserInfoList = (List<UserInfo>)ViewData["UserInfo"];
 }
 
@@ -30,6 +30,7 @@
         }
 
             .infoDiv{
+                padding-top:30px;
                 float:left;
                 height:200px;
             }
@@ -62,10 +63,11 @@
             @{
                 if (_UserAccList != null && _UserAccList.Count > 0)
                 {
+                    int i = 0;
                     foreach (UserAcc item in _UserAccList)
                     {
                         if(_UserInfoList != null &&  _UserInfoList.Count > 0){
-                        foreach( UserInfo infoItem in _UserInfoList){
+                            UserInfo infoItem = _UserInfoList[i];
                         <li>
                             <div>
                                 <div class="imgDiv">
@@ -104,10 +106,11 @@
                                     <span>邮箱：@(item.UserEmail)</span>
                                 </div>
                             </div>
-                        </li>
+                        </li><li style="clear:both;"></li>
+                            i++;
                         }
-                        }
-                        else {
+                        else
+                        {
                             <li>
                               <strong>@(item.UserName)</strong>&nbsp;&nbsp;&nbsp;&nbsp;
                             @{
@@ -121,17 +124,18 @@
                                     <input type="submit" value="锁定会员" />
                                 </form>
                             }
-                            }</li>
+                            }</li><li style="clear:both;"></li>
+                        }
                     }
-                }
                 }
                 else
                 {
-                    <li><span>暂无查询结果</span></li>
+                    <li><span>暂无查询结果。。。</span></li>
                 }
-            }
+}
 
         </ul>
+        
     </div>
     <div style="clear:both;"></div>
 </div>

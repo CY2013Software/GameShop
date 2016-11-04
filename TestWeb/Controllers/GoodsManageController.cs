@@ -166,10 +166,19 @@ namespace TestWeb.Controllers
         public ActionResult GoodsUpdate(string id,string goodsRemarkId,GoodsInfo _goodsInfo)
         {
             if (!string.IsNullOrEmpty(id)) {
+                List<GoodsInfo> _goodsInfoList = new List<GoodsInfo>();
+                DataTable _goodsIdTable = new GoodsRemarkDAL().GoodsId(int.Parse(goodsRemarkId));
+                foreach (DataRow item in _goodsIdTable.Rows) {
+                    GoodsInfo _goodsInfoRes = new GoodsInfo();
+                    _goodsInfoRes.GoodsId = (int)item["goods_id"];
+                    _goodsInfoList.Add(_goodsInfoRes);
+                }
+               GoodsInfo _goodsInfoClass = _goodsInfoList[0];
+
                 int rows = new GoodsRemarkDAL().GoodsRemarkDelete(int.Parse(id), int.Parse(goodsRemarkId));
                 if (rows > 0)
                 {
-                    return RedirectToAction("GoodsUpdate", "GoodsManage");
+                    return RedirectToAction("GoodsUpdate", "GoodsManage", new { goods_id =  _goodsInfoClass.GoodsId});
                 }
                 else {
                     throw new Exception("删除评论失败");
@@ -178,7 +187,7 @@ namespace TestWeb.Controllers
                 int rows = new GoodsInfoDAL().GoodsInfoUpdate(_goodsInfo);
                 if (rows > 0)
                 {
-                    return RedirectToAction("GoodsUpdate", "GoodsManage");
+                    return RedirectToAction("GoodsUpdate", "GoodsManage", new { goods_id = _goodsInfo.GoodsId.ToString() });
                 }
                 else {
                     throw new Exception("更改商品信息失败");
@@ -245,9 +254,16 @@ namespace TestWeb.Controllers
             string imgPath = "";
             if (hfc.Count > 0)
             {
+                if (!string.IsNullOrEmpty(hfc[0].FileName))
+                {
                 imgPath = "/GoodsImg/" + hfc[0].FileName;     //根目录下的Upload文件夹下
                 string PhysicalPath = Server.MapPath(imgPath);//把图片的虚拟路径改为物理路径
-                hfc[0].SaveAs(PhysicalPath);//上传
+                
+                    hfc[0].SaveAs(PhysicalPath);//上传
+                }
+                else {
+                    return Content("未选择图片");
+                }
             }
             return Content(imgPath);    //返回访问路径，让前台可以显示
         }

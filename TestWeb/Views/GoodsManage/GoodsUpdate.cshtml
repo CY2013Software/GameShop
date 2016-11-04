@@ -1,7 +1,280 @@
-﻿
+﻿@using shop.Models;
 @{
     ViewBag.Title = "GoodsUpdate";
+    List<GoodsInfo> _GoodsInfoList = (List<GoodsInfo>)ViewData["GoodsInfo"];
+    List<GoodsRemark> _GoodsRemarkList = (List<GoodsRemark>)ViewData["GoodsRemark"];
+    List<UserAcc> _UserAccList = (List<UserAcc>)ViewData["UserAcc"];
 }
 
-<h2>GoodsUpdate</h2>
+<script src="~/Scripts/ajaxfileupload.js"></script>
+<script type="text/javascript">
+    function checkValue(val) {
+        var status = document.getElementById("GoodsStatus");
+        if (val == 1) {
+            status.value = true;
+        } else if (val == 0) {
+            status.value = false;
+        }
+    }
+
+    function change() {
+        document.getElementById("imgDiv").style.display = "none";
+        document.getElementById("imgUp").style = "margin-right: 60px;float: left;height: 200px;width: 20%;display:inline";
+        document.getElementById("goods_name").disabled = false;
+        document.getElementById("goods_status").disabled = false;
+        document.getElementById("goods_intro").disabled = false;
+        document.getElementById("goods_priceNow").disabled = false;
+        document.getElementById("goods_storage").disabled = false;
+        document.getElementById("btn").style = "display:inline";
+        document.getElementById("changeBtn").style.display = "none";
+        document.getElementById("goods_priceOriginal").disabled = false;
+    }
+
+    function CheckIsEmpty() {
+        var goodsName = document.getElementById("goods_name").value;//名称
+        var goodsImg = document.getElementById("GoodsImage").value;//图片路径
+        var goodsIntro = document.getElementById("goods_intro").value;//商品简介
+        var goodsPriceOri = document.getElementById("goods_priceOriginal")//商品原价
+        var goodsPriceNow = document.getElementById("goods_priceNow").value;//商品单价
+        var goodsStorage = document.getElementById("goods_storage").value;//库存
+
+        if (goodsName == "" || goodsName == null) {
+            alert("商品名称不能为空");
+            return false;
+        }
+        if (goodsImg == "" || goodsImg == null) {
+            alert("商品图片不能为空");
+            return false;
+        }
+        if (goodsIntro == "" || goodsIntro == null) {
+            alert("商品简介不能为空");
+            return false;
+        }
+        
+        if (goodsPriceNow == "" || goodsPriceNow == null) {
+            alert("商品单价不能为空");
+            return false;
+        }
+        if (goodsStorage == "" || goodsStorage == null) {
+            alert("库存数量不能为空");
+            return false;
+        }
+
+        if (goodsPriceOri.value == "" || goodsPriceOri.value == null) {
+                alert("...不能为空");
+                return false;
+            }
+        
+        //提交表单
+        document.getElementById("goods_update").submit();
+
+    }
+    $(function () {
+        //点击事件 js onclick
+        $("#btnUpload").click(function () {
+            //上传图片
+            $.ajaxFileUpload({
+                url: '/GoodsManage/UploadImage', //上传文件的后台方法，告诉ajaxFileUpload
+                secureuri: false, //一般设置为false
+                fileElementId: 'fileUpload', //文件上传控件的Id  <input type="file" id="fileUpload" name="file" />
+                dataType: 'TEXT', //返回值类型 一般设置为json
+                success: function (data, status)  //服务器成功响应处理函数
+                {
+                    $("#imgReLook").attr("src", data);    //当上传成功后显示图片，data就是上传后的访问路径
+                    $("#GoodsImage").val(data);    //当上传成功后显示图片，data就是上传后的访问路径
+                }
+            })
+        })
+    });
+</script>
+
+<style type="text/css">
+    .wal {
+        margin: 0 auto;
+    }
+
+    .ulist {
+        overflow: hidden;
+        /*border: 1px solid #ccc;*/
+    }
+
+        .ulist li {
+            margin-top: 10px;
+            list-style-type: none;
+        }
+
+    .imgDiv {
+        margin-right: 60px;
+        /*border: 1px solid #f00;*/
+        float: left;
+        height: 300px;
+        width: 20%;
+    }
+        .imgDiv img {
+        max-width:220px;
+        }
+
+    .infoDiv {
+        padding-top: 20px;
+        float: left;
+        height: 300px;
+    }
+</style>
+
+
+
+<h2>修改商品</h2>
+
+<div class="wal">
+    <div class="ulist">
+        <ul>
+            @{
+                    foreach (GoodsInfo item in _GoodsInfoList)
+                    {
+                            <li>
+                                <form id="goods_update" action="/GoodsManage/GoodsUpdate" method="post">
+                                    <div class="imgDiv" id="imgDiv">
+                                        <img src="@(item.GoodsImage)" />
+                                    </div>
+                                   
+                                        <div class="form-group" id="imgUp" style="display:none;">
+                                            <label for="exampleInputFile">商品图片</label><p><input type="file" id="fileUpload" name="fileUpload" /></p>
+                                            <input id="btnUpload" type="button" value="上传" />
+                                            <p><img id="imgReLook" alt="上传成功后回显" src="" width="120" height="120" /></p>
+                                            <input type="hidden" name="GoodsImage" id="GoodsImage" />
+                                        </div>
+                                    
+                                    <div class="infoDiv">
+                                        <input id="goods_name" name="GoodsName" value="@(item.GoodsName)" disabled />
+                                        @{
+                        if (item.GoodsStatus == false)
+                        {
+                            <select id="goods_status" name="GoodsStatus" disabled>
+                                <option selected onclick="javascript: checkValue(0)">已下架</option>
+                                <option onclick="javascript: checkValue(1)">已上架</option>
+                            </select>
+                        }
+                        else if (item.GoodsStatus == true)
+                        {
+                            <select id="goods_status" name="GoodsStatus" disabled>
+                                <option onclick="javascript: checkValue(0)">已下架</option>
+                                <option selected onclick="javascript: checkValue(1)">已上架</option>
+                            </select>
+                        }
+                            <input id="GoodsStatus" name="GoodsStatus" style="display:none"/>
+                                        <input name="GoodsId" value="@(item.GoodsId)" style="display:none"/>
+
+}
+                                        <br/><br/>
+                                        <textarea id="goods_intro" class="form-control" form="goods_update" name="GoodsIntro" cols=20 rows=4 wrap="soft" disabled>@(item.GoodsIntro)</textarea>
+                                        <br/>
+                                        @{
+                        decimal flag = new decimal(0);
+                        if (item.GoodsPriceOriginal != flag) { 
+                            <label>原价：</label><input id="goods_priceOriginal" name="GoodsPriceOriginal" value="@(item.GoodsPriceOriginal)" style="width:60px" disabled/>
+                            <label>&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        }
+                        else
+                        {
+                            <input id="goods_priceOriginal" name="GoodsPriceOriginal" value="@(flag)" style="display:none"/>
+                        }
+}
+                                        <label>单价：</label><input id="goods_priceNow" name="GoodsPriceNow" value="@(item.GoodsPriceNow)" style="width:60px" disabled />
+                                        <br/>
+                                        <label>库存：</label><input id="goods_storage" name="GoodsStorage" value="@(item.GoodsStorage)" style="width:60px" disabled />
+                                        <br/><br/>
+                                        <div id="btn" style="display:none">
+                                            <a href="/GoodsManage/GoodsUpdate?goods_id=@(item.GoodsId)"><input type="button" value="取消" /></a>&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="提交" onclick="javascipt:CheckIsEmpty()"/>
+                                        </div>
+                                        <input type="button" id="changeBtn" value="更改" onclick="javascript:change()"/>
+                                    </div>
+                                </form>
+
+                            </li>
+                            <li style="clear:both;"></li>
+                    }
+            }
+
+        </ul>
+
+    </div>
+    <div style="clear:both;"></div>
+</div>
+
+<hr />
+<h3>评论信息</h3>
+
+<div class="wal">
+    <div class="ulist">
+        <ul>
+            @{
+                int i = 0;
+                foreach(GoodsRemark item in _GoodsRemarkList){
+                    UserAcc userItem = _UserAccList[i];
+                   
+                    <li>
+                    <div>
+                        <span>@(userItem.UserName)</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                        @{
+                        if (userItem.UserIsForbided == true)
+                        {
+                            <span style="color:blue">已锁定</span>
+                        }
+                        else if (userItem.UserIsForbided == false)
+                        {
+                            <span style="color:blue">正常</span>
+                        }
+}
+                    </div> 
+                        @{
+                            if (string.IsNullOrEmpty(item.GoodsRemarkFirst) && string.IsNullOrEmpty(item.GoodsRemarkAdd)) { 
+                    <div style="margin-left:40px">默认好评。</div>
+                            }
+                            else if (!string.IsNullOrEmpty(item.GoodsRemarkFirst) && string.IsNullOrEmpty(item.GoodsRemarkAdd))
+                            {
+                                <form action="/GoodsManage/GoodsUpdate" method="post">
+                                    <input name="id" value="0" style="display:none" />
+                                    <input name="goodsRemarkId" value="@(item.GoodsRemarkId)" style="display:none" />
+                                    <div style="margin-left:40px"><span>首次评论：</span>@(item.GoodsRemarkFirst)&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="删除" /></div>
+                                </form>
+                            }
+                            else if (string.IsNullOrEmpty(item.GoodsRemarkFirst) && !string.IsNullOrEmpty(item.GoodsRemarkAdd))
+                            {
+                                <div style="margin-left:40px"><span>首次评论：</span>用户未评论。</div>
+    <form action="/GoodsManage/GoodsUpdate" method="post">
+        <input name="id" value="1" style="display:none" />
+        <input name="goodsRemarkId" value="@(item.GoodsRemarkId)" style="display:none" />
+        <div style="margin-left:40px"><span>追加评论：</span>@(item.GoodsRemarkAdd)&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="删除" /></div>
+    </form>
+                            }
+                            else
+                            {
+                                <form action="/GoodsManage/GoodsUpdate" method="post">
+                                    <input name="id" value="0" style="display:none" />
+                                    <input name="goodsRemarkId" value="@(item.GoodsRemarkId)" style="display:none" />
+                                    <div style="margin-left:40px"><span>首次评论：</span>@(item.GoodsRemarkFirst)&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="删除" /></div>
+                                </form>
+    <form action="/GoodsManage/GoodsUpdate" method="post">
+        <input name="id" value="1" style="display:none" />
+        <input name="goodsRemarkId" value="@(item.GoodsRemarkId)" style="display:none" />
+        <div style="margin-left:40px"><span>追加评论：</span>@(item.GoodsRemarkAdd)&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="删除" /></div>
+    </form>
+                            }
+}
+                        <div></div>
+                        <div></div>
+                </li>
+    <li style="clear:both;"></li>
+                i++;
+                }
+}
+                   
+
+
+        </ul>
+
+    </div>
+    <div style="clear:both;"></div>
+</div>
+
 

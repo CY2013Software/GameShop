@@ -35,5 +35,12 @@ namespace DAL
             }
             return rows;
         }
+
+        //根据评论id查找商品id
+        public DataTable GoodsId(int _goodsRemarkId) {
+            string goodsId = "Select goods_id from Goods_Remark where goods_remark_id = '" + _goodsRemarkId + "'";
+            DataTable goodsIdTable = _sqlHelper.ExecuteDataTable(goodsId);
+            return goodsIdTable;
+        }
     }
 }
