@@ -1,0 +1,191 @@
+﻿@using shop.Models;
+@{
+    ViewBag.Title = "GoodsInfo";
+    List<GoodsInfo> _GoodsInfoList = (List<GoodsInfo>)ViewData["GoodsInfo"];
+    List<GoodsRemark> _GoodsRemarkList = (List<GoodsRemark>)ViewData["GoodsRemark"];
+    List<UserAcc> _UserAccList = (List<UserAcc>)ViewData["UserAcc"];
+}
+
+<script type="text/javascript">
+    function checkNum() {
+        var num = document.getElementById("goods_num").value;
+        if (num >= 9999) {
+            document.getElementById("add").disabled = true;
+            document.getElementById("orderBtn").disabled = true;
+            document.getElementById("purchaseBtn").disabled = true;
+        } else if (num <= 0) {
+            document.getElementById("subtract").disabled = true;
+            document.getElementById("orderBtn").disabled = true;
+            document.getElementById("purchaseBtn").disabled = true;
+        } else {
+            document.getElementById("add").disabled = false;
+            document.getElementById("subtract").disabled = false;
+            document.getElementById("orderBtn").disabled = false;
+            document.getElementById("purchaseBtn").disabled = false;
+        }
+        document.getElementById("orderNum").value = num;
+        document.getElementById("purchaseNum").value = num;
+    }
+    function subtractBtn() {
+        var numb = document.getElementById("goods_num").value;
+        document.getElementById("goods_num").value = numb - 1;
+        checkNum();
+    }
+    function addBtn() {
+        var numb = document.getElementById("goods_num").value;
+        document.getElementById("goods_num").value = parseInt(numb) + parseInt(1);
+        checkNum();
+    }
+    function purchase() {
+        //设置购买时间
+
+        document.getElementById("goods_purchase").submit();
+    }
+</script>
+
+<style type="text/css">
+    .wal {
+        margin: 0 auto;
+    }
+
+    .ulist {
+        overflow: hidden;
+        /*border: 1px solid #ccc;*/
+    }
+
+        .ulist li {
+            margin-left:50px;
+            margin-top: 20px;
+            width:1200px;
+            list-style-type: none;
+        }
+
+    .imgDiv {
+        margin-right: 80px;
+        /*border: 1px solid #f00;*/
+        float: left;
+        height: 420px;
+        width: 40%;
+    }
+
+        .imgDiv img {
+            max-width: 400px;
+        }
+
+    .infoDiv {
+        padding-top: 40px;
+        float: left;
+        height: 420px;
+    }
+</style>
+
+<div class="wal">
+    <div class="ulist">
+        <ul>
+            @{
+                foreach (GoodsInfo item in _GoodsInfoList)
+                {
+                    <li>
+                            <div class="imgDiv" id="imgDiv">
+                                <img src="@(item.GoodsImage)" />
+                            </div>
+
+                            <div class="infoDiv">
+                                <sapn style="font-size:20px;font-weight:bold">@(item.GoodsName)&nbsp;&nbsp;&nbsp;&nbsp;</sapn>
+                     @{
+                    if (item.GoodsStatus == false)
+                    {
+                        <span style="color:blue"><strong>此商品已下架</strong></span>
+                    }
+                     }
+                                <br /><br />
+                                <div style="width:400px;height:80px"><strong><p>@(item.GoodsIntro)</p></strong></div>
+                      @{
+                    decimal flag = new decimal(0);
+                    if (item.GoodsPriceOriginal != flag)
+                    {
+                        <label>原价：</label><span><s>@(item.GoodsPriceOriginal)</s></span>
+                                    <label>&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                    }
+                      }
+                                <label>单价：</label><span style="color:red">@(item.GoodsPriceNow)</span>
+                                <br />
+                                <label>库存：</label><span>@(item.GoodsStorage)</span>
+                                <br /><br />
+                                    <label>选择数量：</label><input type="button" id="subtract" value="-" onclick="javascript:subtractBtn()" />
+                                <input type="number" id="goods_num" value="1" onchange="javascript:checkNum()" style="width:50px"/>
+                                <input type="button" id="add" value="+" onclick="javascript:addBtn()" />
+                                <br/><br />
+
+                                <form action="/OrderForm/GoodsInfo" method="post" style="float:left;margin-left:20px">
+                                    <input name="UserId" value="" style="display:none" />
+                                    <input name="GoodsId" value="@(item.GoodsId)" style="display:none" />
+                                    <input id="orderNum" name="GoodsPurchaseQuantity" style="display:none" />
+                                    <input type="submit" id="orderBtn" value="加入购物车" style="border: 1px solid green; background: red; color: #fff;" />
+                                </form>
+                                <form id="goods_purchase" action="/OrderForm/OrderForm" method="post" style="float:left;margin-left:20px">
+                                    <input name="UserId" value="" style="display:none" />
+                                    <input name="GoodsId" value="@(item.GoodsId)" style="display:none" />
+                                    <input id="purchaseNum" name="GoodsPurchaseQuantity" style="display:none" />
+                                    <input id="purchaseTime" name="GoodsPurchaseTime" style="display:none" />
+                                    <input name="UserOrderFormStatusId" value="1" style="display:none" />
+                                    <input type="button" id="purchaseBtn" value="直接购买" onclick="javascript:purchase()" style="border: 1px solid green; background: red; color: #fff;" />
+                                </form>
+                            </div>
+                    </li>
+                    <li style="clear:both;"></li>
+                }
+            }
+        </ul>
+    </div>
+    <div style="clear:both;"></div>
+</div>
+
+<hr />
+<h3 style="margin-left:50px;">评论信息</h3>
+
+<div class="wal">
+    <div class="ulist">
+        <ul>
+            @{
+                int i = 0;
+                foreach (GoodsRemark item in _GoodsRemarkList)
+                {
+                    UserAcc userItem = _UserAccList[i];
+
+                    <li>
+                        <div>
+                            <span style="color:red">@(userItem.UserName)：</span>
+                        </div>
+                        @{
+                    if (string.IsNullOrEmpty(item.GoodsRemarkFirst) && string.IsNullOrEmpty(item.GoodsRemarkAdd))
+                    {
+                        <div style="margin-left:40px">默认好评。</div>
+                    }
+                    else if (!string.IsNullOrEmpty(item.GoodsRemarkFirst) && string.IsNullOrEmpty(item.GoodsRemarkAdd))
+                    {
+                            <div style="margin-left:40px">
+                                <span>首次评论：</span>@(item.GoodsRemarkFirst)
+                        </div>
+                    }
+                    else if (string.IsNullOrEmpty(item.GoodsRemarkFirst) && !string.IsNullOrEmpty(item.GoodsRemarkAdd))
+                    {
+                        <div style="margin-left:40px"><span>首次评论：</span>用户未评论。</div>
+                                <div style="margin-left:40px"><span>追加评论：</span>@(item.GoodsRemarkAdd)
+                        </div>
+                    }
+                    else
+                    {
+                       <div style="margin-left:40px"><span>首次评论：</span>@(item.GoodsRemarkFirst)</div>
+                       <div style="margin-left:40px"><span>追加评论：</span>@(item.GoodsRemarkAdd)</div> 
+                    }
+                        }
+                    </li>
+                    <li style="clear:both;"></li>
+                    i++;
+                }
+            }
+        </ul>
+    </div>
+    <div style="clear:both;"></div>
+</div>

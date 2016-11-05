@@ -47,7 +47,9 @@
     <Compile Include="GoodsTypeSubclass.cs" />
     <Compile Include="PwdChange.cs" />
     <Compile Include="UserAcc.cs" />
+    <Compile Include="UserCart.cs" />
     <Compile Include="UserInfo.cs" />
+    <Compile Include="UserOrderForm.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

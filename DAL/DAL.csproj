@@ -48,6 +48,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLHelper.cs" />
     <Compile Include="UserAccDAL.cs" />
+    <Compile Include="UserCartDAL.cs" />
     <Compile Include="UserInfoDAL.cs" />
   </ItemGroup>
   <ItemGroup>

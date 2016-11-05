@@ -61,7 +61,7 @@
         }
 
         if (goodsPriceOri.value == "" || goodsPriceOri.value == null) {
-                alert("...不能为空");
+                alert("商品原价不能为空");
                 return false;
             }
         
@@ -176,12 +176,12 @@
                         }
                         else
                         {
-                            <input id="goods_priceOriginal" name="GoodsPriceOriginal" value="@(flag)" style="display:none"/>
+                                    <label>原价：</label><input type="number" id="goods_priceOriginal" name="GoodsPriceOriginal" value="@(flag)" style="width:60px" disabled />
                         }
 }
-                                        <label>单价：</label><input id="goods_priceNow" name="GoodsPriceNow" value="@(item.GoodsPriceNow)" style="width:60px" disabled />
+                                        <label>单价：</label><input type="number" id="goods_priceNow" name="GoodsPriceNow" value="@(item.GoodsPriceNow)" style="width:60px" disabled />
                                         <br/>
-                                        <label>库存：</label><input id="goods_storage" name="GoodsStorage" value="@(item.GoodsStorage)" style="width:60px" disabled />
+                                        <label>库存：</label><input type="number" id="goods_storage" name="GoodsStorage" value="@(item.GoodsStorage)" style="width:60px" disabled />
                                         <br/><br/>
                                         <div id="btn" style="display:none">
                                             <a href="/GoodsManage/GoodsUpdate?goods_id=@(item.GoodsId)"><input type="button" value="取消" /></a>&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="提交" onclick="javascipt:CheckIsEmpty()"/>
