@@ -51,7 +51,26 @@
             alert("库存数量不能为空");
             return false;
         }
-
+        if (goodsPrice.charAt(0) == '0' && goodsPrice.charAt(1) != '.') {
+            alert("商品单价格式错误");
+            return false;
+        }
+        for (var i = 0; i < goodsPrice.length; i++) {
+            if ((goodsPrice.charAt(i) > '9' || goodsPrice.charAt(i) < '0') && goodsPrice.charAt(i) != '.') {
+            alert("商品单价应为数字");
+            return false;
+        }
+        }
+        if (goodsStorage.charAt(0) == '0') {
+            alert("库存格式错误");
+            return false;
+        }
+        for (var i = 0; i < goodsStorage.length; i++) {
+            if (goodsStorage.charAt(i) > '9' || goodsStorage.charAt(i) < '0') {
+                alert("库存应为整数");
+                return false;
+            }
+        }
         //提示提交成功
         alert("添加商品成功");
 

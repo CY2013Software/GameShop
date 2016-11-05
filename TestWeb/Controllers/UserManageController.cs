@@ -56,17 +56,17 @@ namespace TestWeb.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult UserManage(string user_id,string search_box) {
+        public ActionResult UserManage(string user_id,string id) {
             
             
             if (!string.IsNullOrEmpty(user_id)) {//锁定会员状态
-                int rows = new UserAccDAL().ForbidUserAcc(int.Parse(user_id));
+                int rows = new UserAccDAL().ForbidUserAcc(int.Parse(user_id),int.Parse(id));
                 if (rows > 0)
                 {
                     return RedirectToAction("UserManage", "UserManage");
                 }
                 else {
-                    throw new Exception("锁定会员失败");
+                    throw new Exception("锁定或解锁会员失败");
                 }
             }
             return RedirectToAction("UserManage", "UserManage");

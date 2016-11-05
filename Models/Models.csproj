@@ -41,9 +41,11 @@
   <ItemGroup>
     <Compile Include="GoodsInfo.cs" />
     <Compile Include="GoodsRemark.cs" />
+    <Compile Include="ManagerAcc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GoodsType.cs" />
     <Compile Include="GoodsTypeSubclass.cs" />
+    <Compile Include="PwdChange.cs" />
     <Compile Include="UserAcc.cs" />
     <Compile Include="UserInfo.cs" />
   </ItemGroup>

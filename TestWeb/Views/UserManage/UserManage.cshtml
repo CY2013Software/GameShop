@@ -89,13 +89,19 @@
                                     {
                                         <strong>女&nbsp;&nbsp;&nbsp;&nbsp;</strong>
                                     }
-                            if (item.UserIsForbided == true) { 
-                                <span style="color:blue">已锁定</span>
-                            }
-                            else if (item.UserIsForbided == false)
-                            {
+                                        if (item.UserIsForbided == true)
+                                        {
+                                            <form action="/UserManage/UserManage" method="post">
+                                                <input name="user_id" value="@(item.UserId.ToString())" style="display:none" />
+                                                <input type="text" name="id" value="0" style="display:none;"/>
+                                                <input type="submit" value="解锁会员" />
+                                            </form>
+                                        }
+                                        else if (item.UserIsForbided == false)
+                                        {
                                 <form action="/UserManage/UserManage" method="post">
                                     <input name="user_id" value="@(item.UserId.ToString())" style="display:none"/>
+                                    <input type="text" name="id" value="1" style="display:none;" />
                                     <input type="submit" value="锁定会员"/>
                                     </form>
                             }
@@ -114,14 +120,20 @@
                             <li>
                               <strong>@(item.UserName)</strong>&nbsp;&nbsp;&nbsp;&nbsp;
                             @{
-                            if (item.UserIsForbided == true) {
-                                <span style="color:blue">已锁定</span>
+                            if (item.UserIsForbided == true)
+                            {
+                                <form action="/UserManage/UserManage" method="post">
+                                    <input name="user_id" value="@(item.UserId.ToString())" style="display:none" />
+                                    <input type="text" name="id" value="0" style="display:none;" /><br />
+                                    <input type="submit" value="解锁会员" />
+                                </form>
                             }
                             else if (item.UserIsForbided == false)
                             {
                                 <form action="/UserManage/UserManage" method="post">
                                     <input name="user_id" value="@(item.UserId.ToString())" style="display:none" />
-                                    <input type="submit" value="锁定会员" />
+                                    <input type="text" name="id" value="1" style="display:none;" /><br/>
+                                    <input type="submit" value="锁定会员"/>
                                 </form>
                             }
                             }</li><li style="clear:both;"></li>

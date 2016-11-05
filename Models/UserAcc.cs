@@ -18,7 +18,10 @@ namespace shop.Models
         /// </summary>
         public string UserName { set; get; }
 
-        
+        /// <summary>
+        ///会员密码
+        /// </summary>
+        public string UserPwd { set; get; }
 
         /// <summary>
         ///会员邮箱

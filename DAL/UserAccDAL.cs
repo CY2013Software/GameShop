@@ -28,9 +28,16 @@ namespace DAL
         }
 
         //锁定会员状态
-        public int ForbidUserAcc(int _userId) {
+        public int ForbidUserAcc(int _userId,int id) {
+            int rows = 0;
             string forbidUserAcc = "Update User_Acc set user_isForbided = 'True' where user_id = '" + _userId + "'";
-            int rows = _sqlHelper.ExecuteNonQuery(forbidUserAcc);
+            string unForbidUserAcc = "Update User_Acc set user_isForbided = 'False' where user_id = '" + _userId + "'";
+            if (id == 1) { 
+                rows = _sqlHelper.ExecuteNonQuery(forbidUserAcc);
+            }
+            else if (id == 0) {
+                rows = _sqlHelper.ExecuteNonQuery(unForbidUserAcc);
+            }
             return rows;
         }
     }

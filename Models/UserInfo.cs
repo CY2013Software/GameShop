@@ -33,5 +33,14 @@ namespace shop.Models
         /// </summary>
         public string UserPhone { set; get; }
 
+        /// <summary>
+        ///密码提示
+        /// </summary>
+        public string UserPwdHint { set; get; }
+
+        /// <summary>
+        ///密码提示答案
+        /// </summary>
+        public string UserPwdAnswer { set; get; }
     }
 }

@@ -1,0 +1,97 @@
+﻿
+@using shop.Models;
+
+@{
+    ViewBag.Title = "ManagerManage"; 
+    List<ManagerAcc> _ManagerAccList = (List<ManagerAcc>)ViewData["ManagerAcc"];
+}
+
+<style type="text/css">
+    .wal {
+        margin: 0 auto;
+    }
+
+    .ulist {
+        overflow: hidden;
+        /*border: 1px solid #ccc;*/
+    }
+
+        .ulist li {
+            margin-top: 10px;
+            list-style-type: none;
+        }
+
+    .infoDiv {
+        padding-top: 30px;
+        height: 35px;
+    }
+</style>
+
+<h2>管理员管理</h2>
+
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <nav class="navbar navbar-default" role="navigation">
+                <div class="navbar-header">
+                    <form class="navbar-form navbar-left" role="search" action="/Manager/ManagerManage" method="get">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="search_box" />
+                        </div> <button type="submit" class="btn btn-default">查询</button>
+                    </form>
+                </div>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+
+<div class="wal">
+    <div class="ulist" v="@(_ManagerAccList.Count)">
+        <ul>
+            @{
+                if (_ManagerAccList != null && _ManagerAccList.Count > 0)
+                {
+                    foreach (ManagerAcc item in _ManagerAccList) { 
+                            <li>
+                                    <div class="infoDiv">
+                                        <span>@(item.ManagerAccount)</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <span>姓名：@(item.ManagerName)</span><br />
+                                        @{
+                    if (item.ManagerStatus == true)
+                    {
+                        <form action="/Manager/ManagerManage" method="post">
+                            <input name="account" value="@(item.ManagerAccount)" style="display:none" />
+                            <input type="text" name="id" value="0" style="display:none;" />
+                            <input type="submit" value="解锁" style="float:right"/>
+                        </form>
+                    }
+                    else if (item.ManagerStatus == false)
+                    {
+                        <form action="/Manager/ManagerManage" method="post">
+                            <input name="account" value="@(item.ManagerAccount)" style="display:none" />
+                            <input type="text" name="id" value="1" style="display:none;" />
+                            <input type="submit" value="锁定" style="float:right"/>
+                        </form>
+                    }
+                    }
+                                        <form action="/Manager/ManagerManage" method="post">
+                                            <input name="UserName" value="@(item.ManagerAccount)" style="display:none" />
+                                            <input type="submit" value="重置" style="float:right;margin-right:20px" />
+                                        </form>
+                                    </div>
+                            </li>
+                    }
+                }
+                else
+                {
+                    <li><span>暂无查询结果。。。</span></li>
+                }
+            }
+
+        </ul>
+
+    </div>
+    <div style="clear:both;"></div>
+</div>

@@ -199,8 +199,13 @@
     <Content Include="Views\GoodsManage\GoodsAdd.cshtml" />
     <Content Include="Views\GoodsManage\TypeList.cshtml" />
     <Content Include="Views\GoodsManage\TypeAdd.cshtml" />
-    <Content Include="Views\Manager\ManagerIndex.cshtml" />
-    <Content Include="Views\UserManage\UserManage.cshtml" />
+    <Content Include="Views\UserManage\UserManage.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Views\Manager\ManagerLogin.cshtml" />
+    <Content Include="Views\Manager\ManagerPwdChange.cshtml" />
+    <Content Include="Views\Manager\ManagerManage.cshtml" />
+    <Content Include="Views\Manager\ManagerAdd.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DAL\DAL.csproj">
