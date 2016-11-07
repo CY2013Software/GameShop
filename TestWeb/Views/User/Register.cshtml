@@ -1,0 +1,98 @@
+﻿
+@{
+    ViewBag.Title = "Register";
+    string failureId = (string)ViewData["FailureId"];
+}
+
+<script type="text/javascript">
+    function CheckIsEmpty() {
+        var Uname = document.getElementById("user_name").value;//用户昵称
+        var Upwd = document.getElementById("user_pwd").value;//密码
+        var Uconf = document.getElementById("pwd_confirm").value;//重复密码
+        var Uemail = document.getElementById("user_email").value;//邮箱
+
+        if (Uname == "" || Uname == null) {
+            alert("昵称不能为空");
+            return false;
+        }
+        if (Uname.length > 18) {
+            alert("昵称长度应小于等于18位");
+            return false;
+        }
+        if (!(Uname.indexOf(" ") == -1)) {
+            alert("昵称中不能有空格");
+            return false;
+        }
+        if (Upwd == null || Upwd == "") {
+            alert("密码不能为空");
+            return false;
+        }
+        if (!(Upwd.indexOf(" ") == -1)) {
+            alert("密码中不能有空格");
+            return false;
+        }
+        if (Upwd.length < 6 || Upwd.length > 18) {
+            alert("密码长度应在6到18位之间");
+            return false;
+        }
+        if (Uconf == null || Uconf == "") {
+            alert("重复密码不能为空");
+            return false;
+        }
+        if (Uconf != Upwd) {
+            alert("两次输入的密码不一致");
+            return false;
+        }
+        if (Uemail == "" || Uemail == null) {
+            alert("邮箱不能为空");
+            return false;
+        }
+        if (!(Uemail.indexOf(" ") == -1)) {
+            alert("邮箱中不能有空格");
+            return false;
+        }
+
+        //提交表单
+        document.getElementById("user_reg").submit();
+    }
+</script>
+
+<h2>会员注册</h2>
+
+@{
+    if (!string.IsNullOrEmpty(failureId))
+    {
+        if (failureId.Equals("0"))
+        {
+            <span style="color:red;margin-left:20px">此账户名已存在</span>
+        }
+        else if (failureId.Equals("1"))
+        {
+            <span style="color:red;margin-left:20px">此邮箱已存在</span>
+        }
+    }
+}
+
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+
+            <form role="form" id="user_reg" action="/User/Register" method="post">
+                <div class="form-group">
+                    <label>昵称：</label><input type="text" id="user_name" class="form-control" name="UserName" />
+                </div>
+                <div class="form-group">
+                    <label>密码：</label><input type="password" id="user_pwd" class="form-control" name="UserPwd" />
+                </div>
+                <div class="form-group">
+                    <label>重复密码：</label><input type="password" id="pwd_confirm" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>邮箱：</label><input type="email" id="user_email" class="form-control" name="UserEmail" />
+                </div>
+                <button type="button" class="btn btn-default" onclick="javascript:CheckIsEmpty()">注册</button>
+            </form>
+
+        </div>
+    </div>
+</div>

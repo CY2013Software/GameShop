@@ -45,6 +45,7 @@
     <Compile Include="GoodsTypeDAL.cs" />
     <Compile Include="GoodsTypeSubclassDAL.cs" />
     <Compile Include="ManagerAccDAL.cs" />
+    <Compile Include="OrderFormDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLHelper.cs" />
     <Compile Include="UserAccDAL.cs" />

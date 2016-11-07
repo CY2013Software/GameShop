@@ -1,0 +1,161 @@
+﻿
+@{
+    ViewBag.Title = "PwdChange";
+    string operationId = (string)ViewData["Id"];
+    string UserEmail = (string)ViewData["Email"];
+    string UserPwdHint = (string)ViewData["PwdHint"];
+    string StatusId = (string)ViewData["StatusId"];
+}
+
+<script type="text/javascript">
+    function checkEmail() {
+        var emailVal = document.getElementById("email_input").value;
+        if (emailVal == null || emailVal == "") {
+            alert("邮箱不能为空");
+            return false;
+        }
+        if (emailVal.length < 8) {
+            alert("邮箱长度应大于8位");
+            return false;
+        }
+        if (!(emailVal.indexOf(" ") == -1)) {
+            alert("邮箱中不能有空格");
+            return false;
+        }
+
+        document.getElementById("email_form").submit();
+    }
+
+    function checkInput() {
+        var hintAswer = document.getElementById("hint_answer").value;
+        var newPwd = document.getElementById("new_pwd").value;
+        var confPwd = document.getElementById("conf_pwd").value;
+        if (hintAswer == null || hintAswer == "") {
+            alert("密码提示答案不能为空");
+            return false;
+        }
+        if (hintAswer.length > 18) {
+            alert("密码提示答案的长度应小于18位");
+            return false;
+        }
+        if (newPwd == null || newPwd == "") {
+            alert("新密码不能为空");
+            return false;
+        }
+        if (!(newPwd.indexOf(" ") == -1)) {
+            alert("新密码中不能有空格");
+            return false;
+        }
+        if (newPwd.length < 6 || newPwd.length > 18) {
+            alert("新密码长度应在6到18位之间");
+            return false;
+        }
+        
+        if (confPwd == null || conf == "") {
+            alert("重复密码不能为空");
+            return false;
+        }
+        if (confPwd != newPwd) {
+            alert("两次输入的密码不一致");
+            return false;
+        }
+
+        document.getElementById("reset_pwd_form").submit();
+    }
+
+    function checkPwd() {
+        var origPwd = document.getElementById("ori_pwd").value;
+        var newPwd = document.getElementById("new_pwd").value;
+        var confPwd = document.getElementById("conf_pwd").value;
+        if (origPwd == null || origPwd == "") {
+            alert("原密码不能为空");
+            return false;
+        }
+        if (!(origPwd.indexOf(" ") == -1)) {
+            alert("原密码中不能有空格");
+            return false;
+        }
+        if (newPwd == null || newPwd == "") {
+            alert("新密码不能为空");
+            return false;
+        }
+        if (!(newPwd.indexOf(" ") == -1)) {
+            alert("新密码中不能有空格");
+            return false;
+        }
+        if (newPwd.length < 6 || newPwd.length > 18) {
+            alert("新密码长度应在6到18位之间");
+            return false;
+        }
+        if (origPwd == newPwd) {
+            alert("新密码不能与原密码相同");
+        }
+        if (confPwd == null || confPwd == "") {
+            alert("重复密码不能为空");
+            return false;
+        }
+        if (confPwd != newPwd) {
+            alert("两次输入的密码不一致");
+            return false;
+        }
+
+        document.getElementById("update_pwd_form").submit();
+    }
+</script>
+
+<h2>更改密码</h2>
+
+@{
+    if (string.IsNullOrEmpty(operationId))
+    {
+        ////////////////
+        ////////////////获取不到cookie中的email信息则返回登录页
+        ///////////////
+        
+        if (!string.IsNullOrEmpty(StatusId) && StatusId.Equals("-3"))
+        {
+            <span style="color:red">原密码错误！</span>
+        }
+        //从cookie中获取email
+        <form id="update_pwd_form" action="/User/PwdChange" method="post">
+            <input name="Email" value="" style="display:none" />
+            <label>原&nbsp;密&nbsp;码：</label><input type="password" id="ori_pwd" name="OriginalPwd" /><br/>
+            <label>新&nbsp;密&nbsp;码：</label><input type="password" id="new_pwd" name="NewPwd" /><br/>
+            <label>重复密码：</label><input type="password" id="conf_pwd" /><br/>
+            <input type="button" value="确定" onclick="javascript:checkPwd()" />
+        </form>
+    }else if(operationId.Equals("0")){
+        if (!string.IsNullOrEmpty(StatusId) && StatusId.Equals("-1")) { 
+            <span style="color:red">此邮箱不存在！</span>
+        }
+        <form id="email_form" action="/User/PwdChange" method="post">
+            <input name="id" value="0" style="display:none"/>
+           <label>邮箱：</label> <input type="email" id="email_input" name="Email" />
+            <input type="button" value="确定" onclick="javascript:checkEmail()"/>
+        </form>
+    }
+    else if (operationId.Equals("1"))
+    {
+        if (!string.IsNullOrEmpty(StatusId) && StatusId.Equals("-2"))
+        {
+            <span style="color:red">答案错误！</span>
+        }
+        if (!string.IsNullOrEmpty(UserEmail)) {
+        <form id="reset_pwd_form" action="/User/PwdChange" method="post">
+            <input name="id" value="1" style="display:none" />
+            <input name="Email" value="@(UserEmail)" style="display:none" />
+            <label>密码提示：</label><input name="PwdHint" value="@(UserPwdHint)" disabled/><br/>
+            <label>提示答案：</label><input id="hint_answer" name="PwdHintAnswer" /><br />
+            <label>新&nbsp;&nbsp;密&nbsp;&nbsp;码：</label><input type="password" id="new_pwd" name="NewPwd" /><br />
+            <label>重复密码：</label><input type="password" id="conf_pwd"/><br />
+            <input type="button" value="确定" onclick="javascript:checkInput()" />
+        </form>
+        }
+        else
+        {
+            <span>遇到了错误！！！</span>
+        }
+    }
+}
+
+

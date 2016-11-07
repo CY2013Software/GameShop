@@ -102,8 +102,14 @@ namespace DAL
             int rows = 0;
             string pwdChangeSql = "Update Manager_Acc set manager_pwd ='" + _pwdChange.NewPwd + "' where manager_acc ='" + _pwdChange.UserName + "'";
             string initialPwdSql = "Select initialPwd from OrdinaryManager_InitialPwd";
-            if (id == 0) {                              //更改密码
-                rows = _sqlHelper.ExecuteNonQuery(pwdChangeSql);
+            if (id == 0) {
+                //验证原密码
+                ManagerAccDAL _managerAccDAL = new ManagerAccDAL() ;
+                if (_managerAccDAL.pwdCheck(_pwdChange) > 0)
+                { 
+                    //更改密码
+                    rows = _sqlHelper.ExecuteNonQuery(pwdChangeSql);
+                }
             }
             else if (id == 1) {                      //重置密码
                 DataTable initialPwdTable = _sqlHelper.ExecuteDataTable(initialPwdSql);
@@ -112,6 +118,14 @@ namespace DAL
                  string initializePwdSql = "Update Manager_Acc set manager_pwd ='" + initialPwd + "' where manager_acc ='" + _pwdChange.UserName + "'";
                 rows = _sqlHelper.ExecuteNonQuery(initializePwdSql);
             }
+            return rows;
+        }
+
+        //验证密码
+        public int pwdCheck(PwdChange _pwdChange) {
+            string pwdCheckSql = "Select manager_name from Manager_Acc where manager_acc = '" + _pwdChange.UserName + "' and manager_pwd = '" + _pwdChange.OriginalPwd + "'";
+            DataTable pwdCheckTable = _sqlHelper.ExecuteDataTable(pwdCheckSql);
+            int rows = pwdCheckTable.Rows.Count;
             return rows;
         }
 

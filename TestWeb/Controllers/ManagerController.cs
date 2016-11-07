@@ -85,7 +85,7 @@ namespace TestWeb.Controllers
                     return RedirectToAction("GoodsList", "GoodsManage");
                 }
                 else {
-                    throw new Exception("更改密码失败");
+                    return RedirectToAction("ManagerPwdChange", "Manager");
                 }
             }
             else { 
