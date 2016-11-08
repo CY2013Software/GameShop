@@ -2,6 +2,7 @@
 using shop.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -44,7 +45,7 @@ namespace TestWeb.Controllers
                         return RedirectToAction("GoodsList", "Goods");               //在页面上获取cookie中eamil
                     }
                     else if (loginRes == 2) {
-                        return RedirectToAction("UserInfo", "User");               //在页面上获取cookie中email
+                        return RedirectToAction("UserInfos", "User", new { email = _userAcc.UserEmail});               //在页面上获取cookie中email
                     }
                 }
                 else
@@ -95,7 +96,7 @@ namespace TestWeb.Controllers
                 {
                     //Cookie cookie = new Cookie("UserEmail", _userAcc.UserEmail);
                     //Cookie["UserEmail"]
-                    return RedirectToAction("UserInfo", "User");                    //在页面上从cookie中获取email
+                    return RedirectToAction("UserInfos", "User", new { email = _userAcc.UserEmail});                    //在页面上从cookie中获取email
                 }
                 else
                 {
@@ -193,9 +194,74 @@ namespace TestWeb.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult UserInfo(string id)
+        public ActionResult UserInfos(string email)
         {
+            string existsId = "";
+            List<UserInfo> _infoList = new List<UserInfo>();
+            if (!string.IsNullOrEmpty(email))
+            {
+                int userId = new UserInfoDAL().UserId(email);
+                if (userId > 0)
+                {
+                    DataTable _infoTable = new UserInfoDAL().UserInfoQuery(userId);
+                    int rows = _infoTable.Rows.Count;
+                    if (rows > 0)
+                    {   
+                        foreach (DataRow item in _infoTable.Rows)
+                        {
+                            UserInfo _info = new UserInfo();
+                            _info.UserRealname = item["user_realname"].ToString();
+                            _info.UserGender = (bool)item["user_gender"];
+                            _info.UserPhone = item["user_phone"].ToString();
+                            _info.UserPwdHint = item["user_pwd_hint"].ToString();
+                            _infoList.Add(_info);
+                        }
+                    }
+                }
+            }
+            else {
+                existsId = "1";
+            }
+            ViewData["ExistsId"] = existsId;
+            ViewData["Info"] = _infoList;
             return View();
+        }
+
+        [HttpPost]
+        public ActionResult UserInfos(string id, string email, UserInfo _userInfo) {
+            if (!string.IsNullOrEmpty(id) && id.Equals("0"))
+            {                                    //新增个人信息
+                int rows = new UserInfoDAL().InsertOrUpdateInfo(0, email, _userInfo);
+            }
+            else {                               //更改个人信息
+                    int rows = new UserInfoDAL().InsertOrUpdateInfo(1, email, _userInfo);
+            }
+            return RedirectToAction("UserInfos", "User", new { email = email });
+        }
+
+        /// <summary>
+        /// 上传图片
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult UploadImage()
+        {
+            HttpFileCollection hfc = System.Web.HttpContext.Current.Request.Files;
+            string imgPath = "";
+            if (hfc.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(hfc[0].FileName))
+                {
+                    imgPath = "/UserImg/" + hfc[0].FileName;     //根目录下的Upload文件夹下
+                    string PhysicalPath = Server.MapPath(imgPath);//把图片的虚拟路径改为物理路径
+
+                    hfc[0].SaveAs(PhysicalPath);//上传
+                }
+                else
+                {
+                    return Content("未选择图片");
+                }
+            }
+            return Content(imgPath);    //返回访问路径，让前台可以显示
         }
     }
 }

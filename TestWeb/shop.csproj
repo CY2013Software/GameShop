@@ -215,7 +215,7 @@
     <Content Include="Views\User\Login.cshtml" />
     <Content Include="Views\User\Register.cshtml" />
     <Content Include="Views\User\PwdChange.cshtml" />
-    <Content Include="Views\User\UserInfo.cshtml" />
+    <Content Include="Views\User\UserInfos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DAL\DAL.csproj">

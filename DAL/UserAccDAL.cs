@@ -170,5 +170,6 @@ namespace DAL
             int rows = pwdCheckTable.Rows.Count;
             return rows;
         }
+
     }
 }
