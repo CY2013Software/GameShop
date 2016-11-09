@@ -1,0 +1,31 @@
+﻿
+@{
+    ViewBag.Title = "PayMent";
+    string orderFormId = (string)ViewData["OrderFormId"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string UserEmail = "";
+    HttpCookie aCookie = Request.Cookies["UserEmail"];
+    if (aCookie != null)
+    {
+        UserEmail = Server.HtmlEncode(aCookie.Value);
+    }
+}
+@{
+    if (!string.IsNullOrEmpty(UserEmail))
+    {
+        <h2>支付</h2>
+    <form action="/OrderForm/PayMent" method="post">
+        <label>用户名：</label><input type="text"/>
+        <label>密码：</label><input type="password"/>
+        <input name="order_id" value="@(orderFormId)" style="display:none"/>
+        <input type="submit" value="确定"/>
+    </form>
+    }
+    else
+    {
+        <h2 style="color:red">请先<a href="/User/Login">登录</a></h2>
+    }
+}
+
+

@@ -40,6 +40,14 @@ namespace DAL
             return cartInfoTable;
         }
 
+        //按购物车ID从购物车表中查找信息
+        public DataTable CartInfoQuery(int cartId)
+        {
+            string cartInfoQuery = "Select * from User_Cart where cart_id = '" + cartId + "'";
+            DataTable cartInfoTable = _sqlHelper.ExecuteDataTable(cartInfoQuery);
+            return cartInfoTable;
+        }
+
         //按购物车ID删除购物车信息
         public int DeleteCart(int _cartId) {
             string deleteCartSql = "Delete from User_Cart where cart_id = '"+ _cartId +"'";

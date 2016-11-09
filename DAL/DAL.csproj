@@ -51,6 +51,7 @@
     <Compile Include="UserAccDAL.cs" />
     <Compile Include="UserCartDAL.cs" />
     <Compile Include="UserInfoDAL.cs" />
+    <Compile Include="UserPostInfoDAL.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Models\Models.csproj">

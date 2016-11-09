@@ -1,0 +1,118 @@
+﻿@using DAL;
+@using shop.Models;
+@using System.Data;
+@{
+    ViewBag.Title = "PostInfo";
+    string cartId = (string)ViewData["CartId"];
+    string postInfoRes = (string)ViewData["PostInfoRes"];
+
+    string UserEmail = "";
+    HttpCookie aCookie = Request.Cookies["UserEmail"];
+    if (aCookie != null)
+    {
+        UserEmail = Server.HtmlEncode(aCookie.Value);
+    }
+    int userId = 0;
+    if (!string.IsNullOrEmpty(UserEmail))
+    {
+        userId = new UserInfoDAL().UserId(UserEmail);
+    }
+}
+
+<script type="text/javascript">
+    function checkEmpty() {
+        var Uaddress = document.getElementById("address").value;
+        var Uphone = document.getElementById("postPhone").value;
+        var Ucode = document.getElementById("postCode").value;
+        if (Uaddress == null || Uaddress == "") {
+            alert("地址不能为空");
+            return false;
+        }
+        if (Uphone == null || Uphone == "") {
+            alert("电话不能为空");
+            return false;
+        }
+        if (Ucode == null || Ucode == "") {
+            alert("邮编不能为空");
+            return false;
+        }
+        document.getElementById("postInfo_form").submit();
+    }
+</script>
+
+<style type="text/css">
+    .cart_ul li {
+        width: 800px;
+        height: 100px;
+        padding: 10px;
+        list-style-type: none;
+    }
+</style>
+
+@{
+    if (!string.IsNullOrEmpty(UserEmail))
+    {
+        if (!string.IsNullOrEmpty(cartId))
+        {
+            DataTable _cartTable = new UserCartDAL().CartInfoQuery(int.Parse(cartId));
+
+            if (_cartTable.Rows.Count > 0)
+            {
+                DataTable _goodsInfoTable = new GoodsInfoDAL().GoodsInfoQuery((int)_cartTable.Rows[0]["goods_id"]);
+                <h2>确认订单信息</h2>
+    <ul class="cart_ul">
+        <li>
+            <img src="@(_goodsInfoTable.Rows[0]["goods_image"])" style="margin-top:6px;margin-right: 40px;float: left;height: 60px;width: 8%;" />
+            <a href="/Goods/GoodsInfo?goods_id=@((int)_cartTable.Rows[0]["goods_id"])"><span style="float:left;margin-right:40px;margin-top:25px">@(_goodsInfoTable.Rows[0]["goods_name"])</span></a>
+            <form id="order_form" action="/OrderForm/PostInfo" method="post" style="margin-top:25px">@* UserCart对象和string类型的cartId *@
+                <input name="cartId" value="@(cartId)" style="display:none" />
+                <input name="UserId" value="@(userId)" style="display:none" />
+                <input name="GoodsId" value="@((int)_cartTable.Rows[0]["goods_id"])" style="display:none" />
+                <label>数量：</label><input value="@((int)_cartTable.Rows[0]["goods_purchase_quantity"])" style="width:40px;margin-right:40px" disabled /><input name="GoodsPurchaseQuantity" value="@((int)_cartTable.Rows[0]["goods_purchase_quantity"])" style="display:none" />
+                <label>总价：</label><span style="color:red;margin-right:30px">@((decimal)_cartTable.Rows[0]["trade_money"])</span>
+                <input type="submit" value="确定订单"/>
+            </form>
+
+        </li><li style="clear:both;height:10px"></li>
+        @{
+                if (!string.IsNullOrEmpty(postInfoRes))
+                {
+                    <li><span style="font-size:25px;color:red">添加邮递信息成功！</span></li>
+                }
+                else
+                {
+                    <li style="height:200px;">
+                        <form id="postInfo_form" action="/OrderForm/PostInfo" method="post">
+                            <input name="cartId" value="@(cartId)" style="display:none" />
+                            <input name="UserId" value="@(userId)" style="display:none" />
+                            <label>地址：</label><input id="address" name="UserAddress" /><br /><br />
+                            <label>电话：</label><input id="postPhone" name="UserPhone" /><br /><br />
+                            <label>邮编：</label><input id="postCode" name="UserPostcode" /><br /><br />
+                            <input type="button" value="确定" onclick="javascript: checkEmpty()" />
+                        </form>
+                    </li>
+                }
+}
+        
+    </ul>
+            }
+            else
+            {
+                //cartId不正确
+        <span style="font-size:30px;color:red">发生了错误...</span>
+        }
+
+        }
+        else
+        {                      //cartId为空
+        <span style="font-size:30px;color:red">发生了错误...</span>
+        }
+
+        }
+        else
+        {
+        <h2 style="color:red">请先<a href="/User/Login">登录</a></h2>
+        }
+        }
+
+
