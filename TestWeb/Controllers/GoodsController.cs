@@ -157,17 +157,21 @@ namespace TestWeb.Controllers
 
         [HttpPost]
         public ActionResult GoodsInfo(UserCart _userCart) {
-            if (!string.IsNullOrEmpty(_userCart.UserId.ToString())) {
+            if (_userCart.UserId > 0) {
                 int rows = new UserCartDAL().InsertCart(_userCart);
                 if (rows > 0)
                 {
-                    return RedirectToAction("GoodsInfo", "Goods");
+                    return RedirectToAction("Cart", "OrderForm");
                 }
-                else {
-                    throw new Exception("添加失败");
+                else if(rows == -1){
+                    return RedirectToAction("Cart", "OrderForm", new { id = (-1).ToString() });         //商品数量过多
+                }else{
+                    return RedirectToAction("Cart", "OrderForm", new { id = 0.ToString()});           //购物车已满
                 }
             }
-            return RedirectToAction("GoodsInfo", "Goods");
+            else { 
+                return RedirectToAction("Login", "User");
+            }
         }
     }
 }

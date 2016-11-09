@@ -216,6 +216,8 @@
     <Content Include="Views\User\Register.cshtml" />
     <Content Include="Views\User\PwdChange.cshtml" />
     <Content Include="Views\User\UserInfos.cshtml" />
+    <Content Include="Views\OrderForm\Cart.cshtml" />
+    <Content Include="Views\Shared\_Layout_back.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DAL\DAL.csproj">

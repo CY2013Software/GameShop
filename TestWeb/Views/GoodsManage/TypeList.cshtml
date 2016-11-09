@@ -7,7 +7,16 @@
     List<GoodsType> _goodsTypeList = (List<GoodsType>)ViewData["GoodsType"];
     List<GoodsType> _typeDeleteList = (List<GoodsType>)ViewData["TypeDelete"];
     List<GoodsType> _typeSubDeleteList = (List<GoodsType>)ViewData["TypeSubclassDelete"];
+    Layout = "~/Views/Shared/_Layout_back.cshtml";
     ViewBag.Title = "TypeList";
+
+    string MangerAccount = "";
+
+    HttpCookie aCookie = Request.Cookies["ManagerAcc"];
+    if (aCookie != null)
+    {
+        MangerAccount = Server.HtmlEncode(aCookie.Value);
+    }
 }
 
 <script type="text/javascript">
@@ -29,138 +38,157 @@
 @* 遮罩窗体，提示对商品类型删除失败 *@
 
 @{
-    if (_typeDeleteList.Count > 0)
+    if (!string.IsNullOrEmpty(MangerAccount))
     {
-        <div style="position:fixed;display:block;z-index:999;width:350px;height:150px;border:1px #96D1DF solid;background:#ffffff;top:220px;left:35%;">
-            <div style="float: left; width: 100%; height: 24px;line-height: 24px;background: #ecf9ff; 
-	border-bottom: 1px #d3ecf3 solid; 
-	margin-bottom:5px;
-	color: #444; 
-	font-weight: bold;">
-                <div style="float: left;width: 80%;overflow: hidden;">
-                    删除大类别失败:
-                </div>
-                <div style="width: 17%; float: right; font-size:14px;text-align: center; cursor:pointer" >
-                    <a href="/GoodsManage/TypeList" title="关闭页面" style="cursor:pointer">
-                        关闭
-                    </a>
-                </div>
-            </div>
-            <div style="height:120px;margin-left: 5px; ">
-                <div style="margin-top:60px">
-                    <label style="color:red;">该大类别下存在子类别，无法对其进行删除！</label>
-                </div>
-            </div>
-        </div>
-
-    }
-    else if (_typeSubDeleteList.Count > 0)
-    {
-        <div style="position:fixed;display:block;z-index:999;width:350px;height:150px;border:1px #96D1DF solid;background:#ffffff;top:220px;left:35%;">
-            <div style="float: left; width: 100%; height: 24px;line-height: 24px;background: #ecf9ff;
+        if (!MangerAccount.Equals("admin"))
+        {
+            if (_typeDeleteList.Count > 0)
+            {
+                <div style="position:fixed;display:block;z-index:999;width:350px;height:150px;border:1px #96D1DF solid;background:#ffffff;top:220px;left:35%;">
+                    <div style="float: left; width: 100%; height: 24px;line-height: 24px;background: #ecf9ff;
 	border-bottom: 1px #d3ecf3 solid;
 	margin-bottom:5px;
 	color: #444;
 	font-weight: bold;">
-                <div style="float: left;width: 80%;overflow: hidden;">
-                    删除小类别失败:
+                        <div style="float: left;width: 80%;overflow: hidden;">
+                            删除大类别失败:
+                        </div>
+                        <div style="width: 17%; float: right; font-size:14px;text-align: center; cursor:pointer">
+                            <a href="/GoodsManage/TypeList" title="关闭页面" style="cursor:pointer">
+                                关闭
+                            </a>
+                        </div>
+                    </div>
+                    <div style="height:120px;margin-left: 5px; ">
+                        <div style="margin-top:60px">
+                            <label style="color:red;">该大类别下存在子类别，无法对其进行删除！</label>
+                        </div>
+                    </div>
                 </div>
-                <div style="width: 17%; float: right; font-size:14px;text-align: center; cursor:pointer">
-                    <a href="/GoodsManage/TypeList" title="关闭页面" style="cursor:pointer">
-                        关闭
-                    </a>
+
+            }
+            else if (_typeSubDeleteList.Count > 0)
+            {
+                <div style="position:fixed;display:block;z-index:999;width:350px;height:150px;border:1px #96D1DF solid;background:#ffffff;top:220px;left:35%;">
+                    <div style="float: left; width: 100%; height: 24px;line-height: 24px;background: #ecf9ff;
+	border-bottom: 1px #d3ecf3 solid;
+	margin-bottom:5px;
+	color: #444;
+	font-weight: bold;">
+                        <div style="float: left;width: 80%;overflow: hidden;">
+                            删除小类别失败:
+                        </div>
+                        <div style="width: 17%; float: right; font-size:14px;text-align: center; cursor:pointer">
+                            <a href="/GoodsManage/TypeList" title="关闭页面" style="cursor:pointer">
+                                关闭
+                            </a>
+                        </div>
+                    </div>
+                    <div style="height:120px;margin-left: 5px; ">
+                        <div style="margin-top:60px">
+                            <label style="color:red;">该小类别还有商品在使用，无法对其进行删除！</label>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="container">
+                <div class="row clearfix">
+                    <div class="col-md-12 column">
+                        @* 类别管理导航栏 *@
+                        <nav class="navbar navbar-default" role="navigation">
+                            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                                <ul class="nav navbar-nav">
+                                    <li style="margin-top:12px">
+                                        <span style="font-size:20px;"><strong>商品类别</strong></span>
+                                    </li>
+                                </ul>
+                                <ul class="nav navbar-nav navbar-right">
+                                    <li>
+                                        <a href="/GoodsManage/TypeAdd">增加类别</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+
+                        @*商品类别管理栏*@
+                        <div class="panel-group" id="panel-503730">
+                            @{foreach (GoodsType item in _goodsTypeList)
+                            {
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <a class="panel-title collapsed" data-toggle="collapse" data-parent="#panel-503730" href="#@(item.GoodsTypeId)">@(item.GoodsTypeName)</a>
+
+                                        @{
+                                string nameId = item.GoodsTypeId + "123";
+                                        }
+
+                                        <form action="/GoodsManage/TypeList" method="post" style="float:right">
+                                            <a href="/GoodsManage/TypeList?goods_typeId=@(item.GoodsTypeId)">删除类别&nbsp;</a>
+                                            <input value="@(item.GoodsTypeId)" name="GoodsTypeId" style="display:none;" />
+                                            <span id="@(nameId)" style="display:none;">
+                                                <input value="@(item.GoodsTypeName)" name="GoodsTypeName" />
+                                                <input type="submit" value="保存修改&nbsp;" style="border: none; background: none; color:#428BCA;" />
+                                            </span>
+                                            <a href="javascript:show('@(nameId)')">修改名称&nbsp;</a>
+                                        </form>
+
+                                    </div>
+                                    <div id="@(item.GoodsTypeId)" class="panel-collapse collapse">
+                                        @{
+                                List<GoodsTypeSubclass> _goodsTypeSubclassList = new List<GoodsTypeSubclass>();
+                                DataTable _goodsTypeSubclassTable = new GoodsTypeSubclassDAL().GoodsTypeSubclassQuery(item.GoodsTypeId);
+
+                                foreach (DataRow rowItem in _goodsTypeSubclassTable.Rows)
+                                {
+                                    GoodsTypeSubclass _goodsTypeSubclass = new GoodsTypeSubclass();
+                                    _goodsTypeSubclass.GoodsTypeSubclassId = (int)rowItem["goods_type_subclass_id"];
+                                    _goodsTypeSubclass.GoodsTypeSubclassName = rowItem["goods_type_subclass_name"].ToString();
+                                    _goodsTypeSubclassList.Add(_goodsTypeSubclass);
+                                }
+
+                                foreach (GoodsTypeSubclass subclassItem in _goodsTypeSubclassList)
+                                {
+                                    string subId = subclassItem.GoodsTypeSubclassId + "12345";
+                                    string subInputId = subclassItem.GoodsTypeSubclassId + "1111";
+                                    <div class="panel-body">
+                                        <a href="/GoodsManage/TypeList?goods_typeSubclassId=@(subclassItem.GoodsTypeSubclassId)" style="float:right">删除类别&nbsp;</a>
+                                        <form action="/GoodsManage/TypeList" method="post">
+                                            <input value="@(subclassItem.GoodsTypeSubclassId)" name="GoodsTypeSubclassId" style="display:none;" />
+                                            <input id="@(subInputId)" value="@(subclassItem.GoodsTypeSubclassName)" name="GoodsTypeSubclassName" disabled />
+                                            <span id="@(subId)" style="display:none">
+                                                <input type="submit" value="保存修改&nbsp;" style="border: none; background: none; color:#428BCA;" />
+                                            </span>
+                                            <a href="javascript:showSub('@(subId)','@(subInputId)')" style="float:right">修改名称&nbsp;</a>
+                                        </form>
+
+                                    </div>
+                                }
+                                        }
+
+                                    </div>
+                                </div>
+                            }
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div style="height:120px;margin-left: 5px; ">
-                <div style="margin-top:60px">
-                    <label style="color:red;">该小类别还有商品在使用，无法对其进行删除！</label>
-                </div>
-            </div>
-        </div>
+        }
+        else
+        {
+            <span style="font-size:35px;color:red">禁止系统管理员访问本页！</span>
+        }
     }
+    else
+    {
+        <span style="font-size:35px;color:red">请先<a href="/Manager/ManagerLogin">登录</a></span>
+    }
+
+
+    
 }
 
 
 
-<div class="container">
-    <div class="row clearfix">
-        <div class="col-md-12 column">
-            @* 类别管理导航栏 *@
-            <nav class="navbar navbar-default" role="navigation">
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
-                        <li style="margin-top:12px">
-                            <span style="font-size:20px;"><strong>商品类别</strong></span>
-                        </li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="/GoodsManage/TypeAdd">增加类别</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
 
-            @*商品类别管理栏*@
-            <div class="panel-group" id="panel-503730">
-                @{foreach (GoodsType item in _goodsTypeList)
-                {
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <a class="panel-title collapsed" data-toggle="collapse" data-parent="#panel-503730" href="#@(item.GoodsTypeId)">@(item.GoodsTypeName)</a>
-                            
-                            @{
-                    string nameId = item.GoodsTypeId +"123";
-                            }
-
-                            <form action="/GoodsManage/TypeList" method="post" style="float:right">
-                                <a href="/GoodsManage/TypeList?goods_typeId=@(item.GoodsTypeId)">删除类别&nbsp;</a>
-                                <input value="@(item.GoodsTypeId)" name="GoodsTypeId" style="display:none;" />
-                                <span id="@(nameId)" style="display:none;">
-                                    <input value="@(item.GoodsTypeName)" name="GoodsTypeName" />
-                                    <input type="submit" value="保存修改&nbsp;" style="border: none; background: none; color:#428BCA;" />
-                                </span>
-                                <a href="javascript:show('@(nameId)')">修改名称&nbsp;</a>
-                            </form>
-                            
-                        </div>
-                        <div id="@(item.GoodsTypeId)" class="panel-collapse collapse">
-                            @{
-                    List<GoodsTypeSubclass> _goodsTypeSubclassList = new List<GoodsTypeSubclass>();
-                    DataTable _goodsTypeSubclassTable = new GoodsTypeSubclassDAL().GoodsTypeSubclassQuery(item.GoodsTypeId);
-
-                    foreach (DataRow rowItem in _goodsTypeSubclassTable.Rows)
-                    {
-                        GoodsTypeSubclass _goodsTypeSubclass = new GoodsTypeSubclass();
-                        _goodsTypeSubclass.GoodsTypeSubclassId = (int)rowItem["goods_type_subclass_id"];
-                        _goodsTypeSubclass.GoodsTypeSubclassName = rowItem["goods_type_subclass_name"].ToString();
-                        _goodsTypeSubclassList.Add(_goodsTypeSubclass);
-                    }
-
-                    foreach (GoodsTypeSubclass subclassItem in _goodsTypeSubclassList)
-                    {
-                        string subId = subclassItem.GoodsTypeSubclassId + "12345";
-                        string subInputId = subclassItem.GoodsTypeSubclassId + "1111";
-                        <div class="panel-body">
-                            <a href="/GoodsManage/TypeList?goods_typeSubclassId=@(subclassItem.GoodsTypeSubclassId)" style="float:right">删除类别&nbsp;</a>
-                            <form action="/GoodsManage/TypeList" method="post">
-                                <input value="@(subclassItem.GoodsTypeSubclassId)" name="GoodsTypeSubclassId" style="display:none;" />
-                                <input id="@(subInputId)" value="@(subclassItem.GoodsTypeSubclassName)" name="GoodsTypeSubclassName" disabled />
-                                <span id="@(subId)" style="display:none">
-                                    <input type="submit" value="保存修改&nbsp;" style="border: none; background: none; color:#428BCA;" />
-                                </span>
-                                <a href="javascript:showSub('@(subId)','@(subInputId)')" style="float:right">修改名称&nbsp;</a>
-                            </form>
-                            
-                        </div>
-                    }
-                            }
-                            
-                        </div>
-                    </div>
-                }
-                }
-            </div>
-        </div>
-    </div>
-</div>

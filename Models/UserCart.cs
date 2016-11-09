@@ -9,6 +9,11 @@ namespace shop.Models
     public class UserCart
     {
         /// <summary>
+        /// 购物车ID
+        /// </summary>
+        public int CartId { set; get; }
+
+        /// <summary>
         ///会员ID
         /// </summary>
         public int UserId { set; get; }
@@ -22,5 +27,10 @@ namespace shop.Models
         ///商品数量
         /// </summary>
         public int GoodsPurchaseQuantity { set; get; }
+
+        /// <summary>
+        /// 总价格
+        /// </summary>
+        public decimal TradeMoney { set; get; }
     }
 }

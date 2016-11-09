@@ -118,7 +118,7 @@ namespace DAL
                 }
             }else if(id == 1)                 //验证密保答案
             {
-                string answerCheck = "Select user_realname from User_Info where user_pwd_hint = '" + _pwdChange.PwdHint + "',user_pwd_answer = '" + _pwdChange.PwdHintAnswer + "' and user_id = (Select user_id from User_Acc where user_email = '" + _pwdChange.Email + "')";
+                string answerCheck = "Select user_realname from User_Info where user_pwd_hint = '" + _pwdChange.PwdHint + "' and user_pwd_answer = '" + _pwdChange.PwdHintAnswer + "' and user_id = (Select user_id from User_Acc where user_email = '" + _pwdChange.Email + "')";
                 if (_sqlHelper.ExecuteDataTable(answerCheck).Rows.Count > 0)
                 {
                     rows = 2;                          //答案正确
@@ -155,7 +155,7 @@ namespace DAL
             {
                 UserAccDAL _userAccDAL = new UserAccDAL();
                 if (_userAccDAL.pwdCheck(_pwdChange) > 0) {
-                    string changePwd = "Update User_Acc set user_pwd ='" + _pwdChange.NewPwd + "' where manager_acc ='" + _pwdChange.Email + "'";
+                    string changePwd = "Update User_Acc set user_pwd ='" + _pwdChange.NewPwd + "' where user_email ='" + _pwdChange.Email + "'";
                     rows = _sqlHelper.ExecuteNonQuery(changePwd);
                 }
             }

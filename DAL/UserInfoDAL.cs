@@ -20,7 +20,7 @@ namespace DAL
             return userInfoTable;
         }
 
-        //查找邮箱查找ID
+        //根据邮箱查找ID
         public int UserId(string _email)
         {
             string userIdQuery = "Select user_id from User_Acc where user_email = '" + _email + "'";

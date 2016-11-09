@@ -38,8 +38,12 @@ namespace TestWeb.Controllers
 
                 if (loginRes != 1)
                 {
-                    //Cookie cookie = new Cookie("UserEmail", _userAcc.UserEmail);
-                    //Cookie["UserEmail"]
+
+                    HttpCookie aCookie = new HttpCookie("UserEmail");
+                    aCookie.Value = _userAcc.UserEmail.ToString();
+                    aCookie.Expires = DateTime.Now.AddDays(1);
+                    Response.Cookies.Add(aCookie);
+
                     if (loginRes == 3)
                     {
                         return RedirectToAction("GoodsList", "Goods");               //在页面上获取cookie中eamil
@@ -166,8 +170,11 @@ namespace TestWeb.Controllers
                         int Res = new UserAccDAL().ChangePwd(0, _pwdChange);
                         if (Res > 0)
                         {
-                            //Cookie cookie = new Cookie("UserEmail", _pwdChange.Email);
-                            //Cookie["UserEmail"]
+                            HttpCookie aCookie = new HttpCookie("UserEmail");
+                            aCookie.Value = _pwdChange.Email.ToString();
+                            aCookie.Expires = DateTime.Now.AddDays(1);
+                            Response.Cookies.Add(aCookie);
+
                             return RedirectToAction("GoodsList", "Goods");
                         }
                     }
@@ -262,6 +269,18 @@ namespace TestWeb.Controllers
                 }
             }
             return Content(imgPath);    //返回访问路径，让前台可以显示
+        }
+
+        /// <summary>
+        /// 退出登录
+        /// </summary>
+        /// <param name="id"></param>
+        public ActionResult Logout()
+        {
+            HttpCookie cookies = new HttpCookie("UserEmail");
+            cookies.Expires = DateTime.Now.AddDays(-1);
+            Response.Cookies.Add(cookies);
+            return RedirectToAction("GoodsList", "Goods");
         }
     }
 }

@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+</head>
+
+<body>
+    @{
+        string MangerAccount = "";
+
+        HttpCookie aCookie = Request.Cookies["ManagerAcc"];
+        if(aCookie !=null )
+        {
+            MangerAccount = Server.HtmlEncode(aCookie.Value);
+        }
+    
+    }
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("黑店游戏周边后台管理", "ManagerLogin", "Manager", null, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    @{
+                        if (!string.IsNullOrEmpty(MangerAccount))
+                        {
+                            if (MangerAccount.Equals("admin")) { 
+                            <li><a>您好，@(MangerAccount)</a></li>
+                            <li><a href="/Manager/ManagerManage">管理员管理</a></li>
+                            <li><a href="/Manager/ManagerAdd">添加管理员</a></li>
+                            <li><a href="/Manager/Logout">退出</a></li>
+                            }
+                            else
+                            {
+                                <li><a>您好，@(MangerAccount)</a></li>
+                                <li><a href="/Manager/ManagerPwdChange">更改密码</a></li>
+                                <li><a href="/GoodsManage/GoodsList">商品管理</a></li>
+                                <li><a href="/UserManage/UserManage">会员管理</a></li>
+                                <li><a href="">售后服务</a></li>
+                                <li><a href="/Manager/Logout">退出</a></li>
+                            }
+                        }
+                        else
+                        {
+                            <li><a href="/Manager/ManagerLogin">您好，请登录</a></li>
+                        }
+                    }
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - 黑店游戏周边商城</p>
+        </footer>
+    </div>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

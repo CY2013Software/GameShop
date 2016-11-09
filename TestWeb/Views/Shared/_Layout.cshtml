@@ -12,6 +12,22 @@
 </head>
 
 <body>
+    @using DAL;
+    @{
+        string UserEmail = "";
+        
+        HttpCookie aCookie = Request.Cookies["UserEmail"];
+        if (aCookie != null)
+        {
+            UserEmail = Server.HtmlEncode(aCookie.Value);
+        }
+
+        string userName = "";
+        if (!string.IsNullOrEmpty(UserEmail)) {
+            string userNameQuery = "Select user_name from User_Acc where user_email = '" + UserEmail + "'";
+            userName = new SqlHelper().ExecuteDataTable(userNameQuery).Rows[0]["user_name"].ToString();
+        }
+    }
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -20,12 +36,25 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("黑店游戏周边", "Index", "Home", null, new { @class = "navbar-brand" })
+                @Html.ActionLink("黑店游戏周边", "GoodsList", "Goods", null, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a>您好，张三</a></li>
-                    @*<li>@Html.ActionLink("API", "Index", "Help", new { area = "" }, null)</li>*@
+                    @{
+                        if (!string.IsNullOrEmpty(userName))
+                        {
+                            <li><a>您好，@(userName)</a></li>
+                        <li><a href="/User/UserInfos?email=@(UserEmail)">个人资料</a></li>
+                        <li><a href="/OrderForm/Cart">购物车</a></li>
+                        <li><a href="">我的订单</a></li>
+                    <li><a href="/User/Logout">退出</a></li>
+                        }
+                        else
+                        {
+                            <li><a href="/User/Login">您好，请登录</a></li>
+                        }
+}
+                    
                 </ul>
             </div>
         </div>
@@ -34,7 +63,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - 我的 ASP.NET 应用程序</p>
+            <p>&copy; @DateTime.Now.Year - 黑店游戏周边商城</p>
         </footer>
     </div>
 

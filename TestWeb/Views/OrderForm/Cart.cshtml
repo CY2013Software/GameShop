@@ -1,0 +1,79 @@
+﻿@using DAL;
+@using shop.Models;
+@using System.Data;
+@{
+    ViewBag.Title = "Cart";
+    string statusId = (string)ViewData["StatusId"];
+    
+    string UserEmail = "";
+    HttpCookie aCookie = Request.Cookies["UserEmail"];
+    if (aCookie != null)
+    {
+        UserEmail = Server.HtmlEncode(aCookie.Value);
+    }
+}
+
+<style type="text/css">
+   .cart_ul li {
+        width:800px;
+        height:100px;
+        padding:10px;
+            list-style-type: none;
+    }
+</style>
+
+<h2>购物车</h2>
+@{
+    if (!string.IsNullOrEmpty(UserEmail))
+    {
+    int userId = new UserInfoDAL().UserId(UserEmail);
+    List<UserCart> _userCart = new List<UserCart>();
+    DataTable _cartTable = new UserCartDAL().CartInfo(userId);
+    if (_cartTable.Rows.Count == 0) {
+        <h2 style="color:red">购物车空空如也...</h2>
+    }
+    else
+    {
+        if (!string.IsNullOrEmpty(statusId) && statusId.Equals("0"))
+        {
+            <h2 style="color:red">购物车已满</h2>
+        }else if (!string.IsNullOrEmpty(statusId) && statusId.Equals("-1")) { 
+            <h2 style="color:red">商品数量超过了库存！</h2>
+        }
+        else
+        {
+            int i = 0;
+            <ul class="cart_ul">
+                @{
+            while (i < _cartTable.Rows.Count) { 
+                    DataTable _goodsInfoTable = new GoodsInfoDAL().GoodsInfoQuery((int)_cartTable.Rows[i]["goods_id"]);
+                    <li style="border:1px solid red;">
+
+                        <img src="@(_goodsInfoTable.Rows[0]["goods_image"])" style="margin-top:6px;margin-right: 40px;float: left;height: 60px;width: 8%;"/>
+                        <a href="/Goods/GoodsInfo?goods_id=@((int)_cartTable.Rows[i]["goods_id"])"><span style="float:left;margin-right:40px;margin-top:25px">@(_goodsInfoTable.Rows[0]["goods_name"])</span></a>
+                        <form style="margin-top:25px">
+                            <input name="UserId" value="@(userId)" style="display:none" />
+                            <input name="GoodsId" value="@((int)_cartTable.Rows[i]["goods_id"])" style="display:none" />
+                            <label>数量：</label><input name="GoodsPurchaseQuantity" value="@((int)_cartTable.Rows[i]["goods_purchase_quantity"])" style="width:40px;margin-right:40px" disabled/>
+                        <label>总价：</label><span style="color:red;margin-right:30px">@((decimal)_cartTable.Rows[i]["trade_money"])</span>
+                        <input type="submit" value="下单"/>
+                        </form>
+                        <form action="/OrderForm/Cart" method="post" style="float:left;margin-left:465px;margin-top:-28px">
+                            <input name="cartId" value="@((int)_cartTable.Rows[i]["cart_id"])" style="display:none" />
+                            <input type="submit" value="删除" />
+                        </form>
+                    </li><li style="clear:both"><br /><br /><br /><br /><br /><br /></li>
+
+                    i++;
+            }
+                }
+            </ul>
+        }
+
+    }
+    }
+    else
+    {
+        <h2 style="color:red">请先<a href="/User/Login">登录</a></h2>
+    }
+}

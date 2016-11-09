@@ -4,6 +4,15 @@
     List<GoodsInfo> _GoodsInfoList = (List<GoodsInfo>)ViewData["GoodsInfo"];
     List<GoodsRemark> _GoodsRemarkList = (List<GoodsRemark>)ViewData["GoodsRemark"];
     List<UserAcc> _UserAccList = (List<UserAcc>)ViewData["UserAcc"];
+    Layout = "~/Views/Shared/_Layout_back.cshtml";
+
+    string MangerAccount = "";
+
+    HttpCookie aCookie = Request.Cookies["ManagerAcc"];
+    if (aCookie != null)
+    {
+        MangerAccount = Server.HtmlEncode(aCookie.Value);
+    }
 }
 
 <script src="~/Scripts/ajaxfileupload.js"></script>
@@ -121,160 +130,179 @@
     }
 </style>
 
+@{
+    if (!string.IsNullOrEmpty(MangerAccount))
+    {
+        if (!MangerAccount.Equals("admin"))
+        {
+            <h2>修改商品</h2>
 
+            <div class="wal">
+                <div class="ulist">
+                    <ul>
+                        @{
+            foreach (GoodsInfo item in _GoodsInfoList)
+            {
+                <li>
+                    <form id="goods_update" action="/GoodsManage/GoodsUpdate" method="post">
+                        <div class="imgDiv" id="imgDiv">
+                            <img src="@(item.GoodsImage)" />
+                        </div>
 
-<h2>修改商品</h2>
+                        <div class="form-group" id="imgUp" style="display:none;">
+                            <label for="exampleInputFile">商品图片</label><p><input type="file" id="fileUpload" name="fileUpload" /></p>
+                            <input id="btnUpload" type="button" value="上传" />
+                            <p><img id="imgReLook" alt="上传成功后回显" src="" width="120" height="120" /></p>
+                            <input type="hidden" name="GoodsImage" id="GoodsImage" />
+                        </div>
 
-<div class="wal">
-    <div class="ulist">
-        <ul>
-            @{
-                    foreach (GoodsInfo item in _GoodsInfoList)
-                    {
-                            <li>
-                                <form id="goods_update" action="/GoodsManage/GoodsUpdate" method="post">
-                                    <div class="imgDiv" id="imgDiv">
-                                        <img src="@(item.GoodsImage)" />
-                                    </div>
-                                   
-                                        <div class="form-group" id="imgUp" style="display:none;">
-                                            <label for="exampleInputFile">商品图片</label><p><input type="file" id="fileUpload" name="fileUpload" /></p>
-                                            <input id="btnUpload" type="button" value="上传" />
-                                            <p><img id="imgReLook" alt="上传成功后回显" src="" width="120" height="120" /></p>
-                                            <input type="hidden" name="GoodsImage" id="GoodsImage" />
-                                        </div>
-                                    
-                                    <div class="infoDiv">
-                                        <input id="goods_name" name="GoodsName" value="@(item.GoodsName)" disabled />
-                                        @{
-                        if (item.GoodsStatus == false)
-                        {
-                            <select id="goods_status" name="GoodsStatus" disabled>
-                                <option selected onclick="javascript: checkValue(0)">已下架</option>
-                                <option onclick="javascript: checkValue(1)">已上架</option>
-                            </select>
-                        }
-                        else if (item.GoodsStatus == true)
-                        {
-                            <select id="goods_status" name="GoodsStatus" disabled>
-                                <option onclick="javascript: checkValue(0)">已下架</option>
-                                <option selected onclick="javascript: checkValue(1)">已上架</option>
-                            </select>
-                        }
-                            <input id="GoodsStatus" name="GoodsStatus" style="display:none"/>
-                                        <input name="GoodsId" value="@(item.GoodsId)" style="display:none"/>
+                        <div class="infoDiv">
+                            <input id="goods_name" name="GoodsName" value="@(item.GoodsName)" disabled />
+                            @{
+                if (item.GoodsStatus == false)
+                {
+                    <select id="goods_status" name="GoodsStatus" disabled>
+                        <option selected onclick="javascript: checkValue(0)">已下架</option>
+                        <option onclick="javascript: checkValue(1)">已上架</option>
+                    </select>
+                }
+                else if (item.GoodsStatus == true)
+                {
+                    <select id="goods_status" name="GoodsStatus" disabled>
+                        <option onclick="javascript: checkValue(0)">已下架</option>
+                        <option selected onclick="javascript: checkValue(1)">已上架</option>
+                    </select>
+                }
+                <input id="GoodsStatus" name="GoodsStatus" style="display:none" />
+                                <input name="GoodsId" value="@(item.GoodsId)" style="display:none" />
 
-}
-                                        <br/><br/>
-                                        <textarea id="goods_intro" class="form-control" form="goods_update" name="GoodsIntro" cols=20 rows=4 wrap="soft" disabled>@(item.GoodsIntro)</textarea>
-                                        <br/>
-                                        @{
-                        decimal flag = new decimal(0);
-                        if (item.GoodsPriceOriginal != flag) { 
-                            <label>原价：</label><input id="goods_priceOriginal" name="GoodsPriceOriginal" value="@(item.GoodsPriceOriginal)" style="width:60px" disabled/>
-                            <label>&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                        }
-                        else
-                        {
-                                    <label>原价：</label><input type="number" id="goods_priceOriginal" name="GoodsPriceOriginal" value="@(flag)" style="width:60px" disabled />
-                        }
-}
-                                        <label>单价：</label><input type="number" id="goods_priceNow" name="GoodsPriceNow" value="@(item.GoodsPriceNow)" style="width:60px" disabled />
-                                        <br/>
-                                        <label>库存：</label><input type="number" id="goods_storage" name="GoodsStorage" value="@(item.GoodsStorage)" style="width:60px" disabled />
-                                        <br/><br/>
-                                        <div id="btn" style="display:none">
-                                            <a href="/GoodsManage/GoodsUpdate?goods_id=@(item.GoodsId)"><input type="button" value="取消" /></a>&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="提交" onclick="javascipt:CheckIsEmpty()"/>
-                                        </div>
-                                        <input type="button" id="changeBtn" value="更改" onclick="javascript:change()"/>
-                                    </div>
-                                </form>
+                            }
+                            <br /><br />
+                            <textarea id="goods_intro" class="form-control" form="goods_update" name="GoodsIntro" cols=20 rows=4 wrap="soft" disabled>@(item.GoodsIntro)</textarea>
+                            <br />
+                            @{
+                decimal flag = new decimal(0);
+                if (item.GoodsPriceOriginal != flag)
+                {
+                    <label>原价：</label><input id="goods_priceOriginal" name="GoodsPriceOriginal" value="@(item.GoodsPriceOriginal)" style="width:60px" disabled />
+                                <label>&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                }
+                else
+                {
+                    <label>原价：</label><input type="number" id="goods_priceOriginal" name="GoodsPriceOriginal" value="@(flag)" style="width:60px" disabled />
+                }
+                            }
+                            <label>单价：</label><input type="number" id="goods_priceNow" name="GoodsPriceNow" value="@(item.GoodsPriceNow)" style="width:60px" disabled />
+                            <br />
+                            <label>库存：</label><input type="number" id="goods_storage" name="GoodsStorage" value="@(item.GoodsStorage)" style="width:60px" disabled />
+                            <br /><br />
+                            <div id="btn" style="display:none">
+                                <a href="/GoodsManage/GoodsUpdate?goods_id=@(item.GoodsId)"><input type="button" value="取消" /></a>&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="提交" onclick="javascipt:CheckIsEmpty()" />
+                            </div>
+                            <input type="button" id="changeBtn" value="更改" onclick="javascript:change()" />
+                        </div>
+                    </form>
 
-                            </li>
+                </li>
                             <li style="clear:both;"></li>
-                    }
             }
+                        }
 
-        </ul>
+                    </ul>
 
-    </div>
-    <div style="clear:both;"></div>
-</div>
+                </div>
+                <div style="clear:both;"></div>
+            </div>
 
-<hr />
-<h3>评论信息</h3>
+            <hr />
+            <h3>评论信息</h3>
 
-<div class="wal">
-    <div class="ulist">
-        <ul>
-            @{
-                int i = 0;
-                foreach(GoodsRemark item in _GoodsRemarkList){
-                    UserAcc userItem = _UserAccList[i];
-                   
-                    <li>
+            <div class="wal">
+                <div class="ulist">
+                    <ul>
+                        @{
+            int i = 0;
+            foreach (GoodsRemark item in _GoodsRemarkList)
+            {
+                UserAcc userItem = _UserAccList[i];
+
+                <li>
                     <div>
                         <span>@(userItem.UserName)</span>&nbsp;&nbsp;&nbsp;&nbsp;
                         @{
-                        if (userItem.UserIsForbided == true)
-                        {
-                            <span style="color:blue">已锁定</span>
-                        }
-                        else if (userItem.UserIsForbided == false)
-                        {
-                            <span style="color:blue">正常</span>
-                        }
-}
-                    </div> 
-                        @{
-                            if (string.IsNullOrEmpty(item.GoodsRemarkFirst) && string.IsNullOrEmpty(item.GoodsRemarkAdd)) { 
-                    <div style="margin-left:40px">默认好评。</div>
-                            }
-                            else if (!string.IsNullOrEmpty(item.GoodsRemarkFirst) && string.IsNullOrEmpty(item.GoodsRemarkAdd))
-                            {
-                                <form action="/GoodsManage/GoodsUpdate" method="post">
-                                    <input name="id" value="0" style="display:none" />
-                                    <input name="goodsRemarkId" value="@(item.GoodsRemarkId)" style="display:none" />
-                                    <div style="margin-left:40px"><span>首次评论：</span>@(item.GoodsRemarkFirst)&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="删除" /></div>
-                                </form>
-                            }
-                            else if (string.IsNullOrEmpty(item.GoodsRemarkFirst) && !string.IsNullOrEmpty(item.GoodsRemarkAdd))
-                            {
-                                <div style="margin-left:40px"><span>首次评论：</span>用户未评论。</div>
-    <form action="/GoodsManage/GoodsUpdate" method="post">
-        <input name="id" value="1" style="display:none" />
-        <input name="goodsRemarkId" value="@(item.GoodsRemarkId)" style="display:none" />
-        <div style="margin-left:40px"><span>追加评论：</span>@(item.GoodsRemarkAdd)&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="删除" /></div>
-    </form>
-                            }
-                            else
-                            {
-                                <form action="/GoodsManage/GoodsUpdate" method="post">
-                                    <input name="id" value="0" style="display:none" />
-                                    <input name="goodsRemarkId" value="@(item.GoodsRemarkId)" style="display:none" />
-                                    <div style="margin-left:40px"><span>首次评论：</span>@(item.GoodsRemarkFirst)&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="删除" /></div>
-                                </form>
-    <form action="/GoodsManage/GoodsUpdate" method="post">
-        <input name="id" value="1" style="display:none" />
-        <input name="goodsRemarkId" value="@(item.GoodsRemarkId)" style="display:none" />
-        <div style="margin-left:40px"><span>追加评论：</span>@(item.GoodsRemarkAdd)&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="删除" /></div>
-    </form>
-                            }
-}
-                        <div></div>
-                        <div></div>
-                </li>
-    <li style="clear:both;"></li>
-                i++;
+                if (userItem.UserIsForbided == true)
+                {
+                    <span style="color:blue">已锁定</span>
                 }
+                else if (userItem.UserIsForbided == false)
+                {
+                    <span style="color:blue">正常</span>
+                }
+                        }
+                    </div>
+                    @{
+                if (string.IsNullOrEmpty(item.GoodsRemarkFirst) && string.IsNullOrEmpty(item.GoodsRemarkAdd))
+                {
+                    <div style="margin-left:40px">默认好评。</div>
+                }
+                else if (!string.IsNullOrEmpty(item.GoodsRemarkFirst) && string.IsNullOrEmpty(item.GoodsRemarkAdd))
+                {
+                    <form action="/GoodsManage/GoodsUpdate" method="post">
+                        <input name="id" value="0" style="display:none" />
+                        <input name="goodsRemarkId" value="@(item.GoodsRemarkId)" style="display:none" />
+                        <div style="margin-left:40px"><span>首次评论：</span>@(item.GoodsRemarkFirst)&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="删除" /></div>
+                    </form>
+                }
+                else if (string.IsNullOrEmpty(item.GoodsRemarkFirst) && !string.IsNullOrEmpty(item.GoodsRemarkAdd))
+                {
+                    <div style="margin-left:40px"><span>首次评论：</span>用户未评论。</div>
+                        <form action="/GoodsManage/GoodsUpdate" method="post">
+                            <input name="id" value="1" style="display:none" />
+                            <input name="goodsRemarkId" value="@(item.GoodsRemarkId)" style="display:none" />
+                            <div style="margin-left:40px"><span>追加评论：</span>@(item.GoodsRemarkAdd)&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="删除" /></div>
+                        </form>
+                }
+                else
+                {
+                    <form action="/GoodsManage/GoodsUpdate" method="post">
+                        <input name="id" value="0" style="display:none" />
+                        <input name="goodsRemarkId" value="@(item.GoodsRemarkId)" style="display:none" />
+                        <div style="margin-left:40px"><span>首次评论：</span>@(item.GoodsRemarkFirst)&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="删除" /></div>
+                    </form>
+                        <form action="/GoodsManage/GoodsUpdate" method="post">
+                            <input name="id" value="1" style="display:none" />
+                            <input name="goodsRemarkId" value="@(item.GoodsRemarkId)" style="display:none" />
+                            <div style="margin-left:40px"><span>追加评论：</span>@(item.GoodsRemarkAdd)&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="删除" /></div>
+                        </form>
+                }
+                    }
+                    <div></div>
+                    <div></div>
+                </li>
+                            <li style="clear:both;"></li>
+                i++;
+            }
+                        }
+
+
+
+                    </ul>
+
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+
+        }
+        else
+        {
+            <span style="font-size:35px;color:red">禁止系统管理员访问本页！</span>
+        }
+    }
+    else
+    {
+        <span style="font-size:35px;color:red">请先<a href="/Manager/ManagerLogin">登录</a></span>
+    }
 }
-                   
 
-
-        </ul>
-
-    </div>
-    <div style="clear:both;"></div>
-</div>
 
 

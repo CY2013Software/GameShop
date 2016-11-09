@@ -4,6 +4,15 @@
 @{
     List<GoodsType> _goodsTypeList = (List<GoodsType>)ViewData["GoodsType"];
     ViewBag.Title = "GoodsAdd";
+    Layout = "~/Views/Shared/_Layout_back.cshtml";
+
+    string MangerAccount = "";
+
+    HttpCookie aCookie = Request.Cookies["ManagerAcc"];
+    if (aCookie != null)
+    {
+        MangerAccount = Server.HtmlEncode(aCookie.Value);
+    }
 }
 
 <script src="~/Scripts/ajaxfileupload.js"></script>
@@ -100,80 +109,96 @@
 
 </script>
 
+@{
+    if (!string.IsNullOrEmpty(MangerAccount))
+    {
+        if (!MangerAccount.Equals("admin"))
+        {
+            <h2>添加商品</h2>
 
-<h2>添加商品</h2>
-
-<div class="container">
-    <div class="row clearfix">
-        <div class="col-md-12 column">
-            <div class="form-group">
-                <label for="exampleInputEmail1">商品类别</label>
-            </div>
-            <nav class="navbar navbar-default" role="navigation">
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
+            <div class="container">
+                <div class="row clearfix">
+                    <div class="col-md-12 column">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">商品类别</label>
+                        </div>
+                        <nav class="navbar navbar-default" role="navigation">
+                            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                                <ul class="nav navbar-nav">
+                                    @{
+            foreach (GoodsType item in _goodsTypeList)
+            {
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">@(item.GoodsTypeName)<strong class="caret"></strong></a>
+                    <ul class="dropdown-menu">
                         @{
-                            foreach (GoodsType item in _goodsTypeList)
-                            {
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">@(item.GoodsTypeName)<strong class="caret"></strong></a>
-                                    <ul class="dropdown-menu">
-                                        @{
-                                List<GoodsTypeSubclass> _goodsTypeSubclassList = new List<GoodsTypeSubclass>();
-                                DataTable _goodsTypeSubclassTable = new GoodsTypeSubclassDAL().GoodsTypeSubclassQuery(item.GoodsTypeId);
+                List<GoodsTypeSubclass> _goodsTypeSubclassList = new List<GoodsTypeSubclass>();
+                DataTable _goodsTypeSubclassTable = new GoodsTypeSubclassDAL().GoodsTypeSubclassQuery(item.GoodsTypeId);
 
-                                foreach (DataRow rowItem in _goodsTypeSubclassTable.Rows)
-                                {
-                                    GoodsTypeSubclass _goodsTypeSubclass = new GoodsTypeSubclass();
-                                    _goodsTypeSubclass.GoodsTypeSubclassId = (int)rowItem["goods_type_subclass_id"];
-                                    _goodsTypeSubclass.GoodsTypeSubclassName = rowItem["goods_type_subclass_name"].ToString();
-                                    _goodsTypeSubclassList.Add(_goodsTypeSubclass);
-                                }
+                foreach (DataRow rowItem in _goodsTypeSubclassTable.Rows)
+                {
+                    GoodsTypeSubclass _goodsTypeSubclass = new GoodsTypeSubclass();
+                    _goodsTypeSubclass.GoodsTypeSubclassId = (int)rowItem["goods_type_subclass_id"];
+                    _goodsTypeSubclass.GoodsTypeSubclassName = rowItem["goods_type_subclass_name"].ToString();
+                    _goodsTypeSubclassList.Add(_goodsTypeSubclass);
+                }
 
-                                foreach (GoodsTypeSubclass subclassItem in _goodsTypeSubclassList)
-                                {
-                                    <li>
-                                        <a href="javascript:setSubclassId('@(subclassItem.GoodsTypeSubclassId)','@(subclassItem.GoodsTypeSubclassName)')">@(subclassItem.GoodsTypeSubclassName)</a>
-                                    </li>
-                                }
+                foreach (GoodsTypeSubclass subclassItem in _goodsTypeSubclassList)
+                {
+                    <li>
+                        <a href="javascript:setSubclassId('@(subclassItem.GoodsTypeSubclassId)','@(subclassItem.GoodsTypeSubclassName)')">@(subclassItem.GoodsTypeSubclassName)</a>
+                    </li>
+                }
 
-                                        }
-                                    </ul>
-                                </li>
-                            }
                         }
                     </ul>
-                </div>
-            </nav>
-            <form role="form" id="goods_add" action="/GoodsManage/GoodsAdd" method="post">
-                <div class="form-group" style="display:none;">
-                    <label for="exampleInputEmail1">商品类别ID</label><input type="text" id="goods_typeSubclassId" class="form-control" name="GoodsTypeSubclassId" />
-                </div>
-                <div class="form-group">
-                    <input type="text" id="goods_typeSubclassText" class="form-control" name="GoodsTypeSubclassText" />
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputEmail1">商品名称</label><input type="text" id="goods_name" class="form-control" name="GoodsName" />
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputFile">商品图片</label><p><input type="file" id="fileUpload" name="fileUpload"/></p>
-                    <input id="btnUpload" type="button" value="上传" />
-                    <p><img id="imgReLook" alt="上传成功后回显" src="" width="120" height="120" /></p>
-                    <input type="hidden" name="GoodsImage" id="GoodsImage" />
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword1">商品简介</label><textarea id="goods_intro" class="form-control" form="goods_add" name="GoodsIntro" cols=40 rows=4 wrap="soft"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>商品单价</label><input type="number" id="goods_price" class="form-control" name="GoodsPriceNow" />
-                </div>
-                <div class="form-group">
-                    <label>库存数量</label><input type="number" id="goods_storage" class="form-control" name="GoodsStorage" />
-                </div>
+                </li>
+            }
+                                    }
+                                </ul>
+                            </div>
+                        </nav>
+                        <form role="form" id="goods_add" action="/GoodsManage/GoodsAdd" method="post">
+                            <div class="form-group" style="display:none;">
+                                <label for="exampleInputEmail1">商品类别ID</label><input type="text" id="goods_typeSubclassId" class="form-control" name="GoodsTypeSubclassId" />
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="goods_typeSubclassText" class="form-control" name="GoodsTypeSubclassText" />
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">商品名称</label><input type="text" id="goods_name" class="form-control" name="GoodsName" />
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputFile">商品图片</label><p><input type="file" id="fileUpload" name="fileUpload" /></p>
+                                <input id="btnUpload" type="button" value="上传" />
+                                <p><img id="imgReLook" alt="上传成功后回显" src="" width="120" height="120" /></p>
+                                <input type="hidden" name="GoodsImage" id="GoodsImage" />
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">商品简介</label><textarea id="goods_intro" class="form-control" form="goods_add" name="GoodsIntro" cols=40 rows=4 wrap="soft"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>商品单价</label><input type="number" id="goods_price" class="form-control" name="GoodsPriceNow" />
+                            </div>
+                            <div class="form-group">
+                                <label>库存数量</label><input type="number" id="goods_storage" class="form-control" name="GoodsStorage" />
+                            </div>
 
-                <button type="button" class="btn btn-default" onclick="javascript:CheckIsEmpty()">确认</button>
-            </form>
+                            <button type="button" class="btn btn-default" onclick="javascript:CheckIsEmpty()">确认</button>
+                        </form>
 
-        </div>
-    </div>
-</div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <span style="font-size:35px;color:red">禁止系统管理员访问本页！</span>
+        }
+    }
+    else
+    {
+        <span style="font-size:35px;color:red">请先<a href="/Manager/ManagerLogin">登录</a></span>
+    }
+}
+

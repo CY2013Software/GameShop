@@ -39,8 +39,11 @@ namespace TestWeb.Controllers
 
                 if (loginRes != 1)
                 {
-                    Cookie cookie = new Cookie("ManagerAccount", _managerAcc.ManagerAccount);
-                    //Cookie["ManagerAccount"]
+                    HttpCookie aCookie = new HttpCookie("ManagerAcc");
+                    aCookie.Value = _managerAcc.ManagerAccount.ToString();
+                    aCookie.Expires = DateTime.Now.AddDays(1);
+                    Response.Cookies.Add(aCookie);
+
                     if (loginRes == 2)
                     {
                         return RedirectToAction("ManagerPwdChange", "Manager");               //在页面上获取cookie中账户名
@@ -180,6 +183,18 @@ namespace TestWeb.Controllers
                 }
             }
             return RedirectToAction("ManagerAdd", "Manager");
+        }
+
+        /// <summary>
+        /// 退出登录状态
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Logout()
+        {
+            HttpCookie cookies = new HttpCookie("ManagerAcc");
+            cookies.Expires = DateTime.Now.AddDays(-1);
+            Response.Cookies.Add(cookies);
+            return RedirectToAction("ManagerLogin", "Manager");
         }
     }
 }

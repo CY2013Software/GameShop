@@ -9,6 +9,15 @@
     ViewBag.Title = "GoodsList";
     List<GoodsType> _goodsTypeList = (List<GoodsType>)ViewData["GoodsType"];
     List<GoodsInfo> _goodsInfoList = (List<GoodsInfo>)ViewData["GoodsInfo"];
+    Layout = "~/Views/Shared/_Layout_back.cshtml";
+
+    string MangerAccount = "";
+
+    HttpCookie aCookie = Request.Cookies["ManagerAcc"];
+    if (aCookie != null)
+    {
+        MangerAccount = Server.HtmlEncode(aCookie.Value);
+    }
 }
 
 <style type="text/css">
@@ -49,89 +58,110 @@
             }
     </style>
 
-<div class="container">
-    <div class="row clearfix">
-        <div class="col-md-12 column">
-            <nav class="navbar navbar-default" role="navigation">
+@{
+    if (!string.IsNullOrEmpty(MangerAccount))
+    {
+        if (!MangerAccount.Equals("admin"))
+        {
+            <div class="container">
+                <div class="row clearfix">
+                    <div class="col-md-12 column">
+                        <nav class="navbar navbar-default" role="navigation">
 
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
+                            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                                <ul class="nav navbar-nav">
+                                    @{
+            foreach (GoodsType item in _goodsTypeList)
+            {
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">@(item.GoodsTypeName)<strong class="caret"></strong></a>
+                    <ul class="dropdown-menu">
                         @{
-                            foreach (GoodsType item in _goodsTypeList)
-                            {
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">@(item.GoodsTypeName)<strong class="caret"></strong></a>
-                            <ul class="dropdown-menu">
-                               @{ 
-                                   List<GoodsTypeSubclass> _goodsTypeSubclassList = new List<GoodsTypeSubclass>();
-                                DataTable _goodsTypeSubclassTable = new GoodsTypeSubclassDAL().GoodsTypeSubclassQuery(item.GoodsTypeId);
+                List<GoodsTypeSubclass> _goodsTypeSubclassList = new List<GoodsTypeSubclass>();
+                DataTable _goodsTypeSubclassTable = new GoodsTypeSubclassDAL().GoodsTypeSubclassQuery(item.GoodsTypeId);
 
-                                foreach (DataRow rowItem in _goodsTypeSubclassTable.Rows)
-                                {
-                                    GoodsTypeSubclass _goodsTypeSubclass = new GoodsTypeSubclass();
-                                    _goodsTypeSubclass.GoodsTypeSubclassId = (int)rowItem["goods_type_subclass_id"];
-                                    _goodsTypeSubclass.GoodsTypeSubclassName = rowItem["goods_type_subclass_name"].ToString();
-                                    _goodsTypeSubclassList.Add(_goodsTypeSubclass);
-                                }
+                foreach (DataRow rowItem in _goodsTypeSubclassTable.Rows)
+                {
+                    GoodsTypeSubclass _goodsTypeSubclass = new GoodsTypeSubclass();
+                    _goodsTypeSubclass.GoodsTypeSubclassId = (int)rowItem["goods_type_subclass_id"];
+                    _goodsTypeSubclass.GoodsTypeSubclassName = rowItem["goods_type_subclass_name"].ToString();
+                    _goodsTypeSubclassList.Add(_goodsTypeSubclass);
+                }
 
-                                foreach (GoodsTypeSubclass subclassItem in _goodsTypeSubclassList)
-                                {
-                                    <li>
-                                        <a href="/GoodsManage/GoodsList?subclass_id=@((subclassItem.GoodsTypeSubclassId).ToString())">@(subclassItem.GoodsTypeSubclassName)</a>
-                                    </li>
-                                }
+                foreach (GoodsTypeSubclass subclassItem in _goodsTypeSubclassList)
+                {
+                    <li>
+                        <a href="/GoodsManage/GoodsList?subclass_id=@((subclassItem.GoodsTypeSubclassId).ToString())">@(subclassItem.GoodsTypeSubclassName)</a>
+                    </li>
+                }
 
-                            }
-                            </ul>
-                        </li>
-                        }
                         }
                     </ul>
-                    <form class="navbar-form navbar-left" role="search" action="/GoodsManage/GoodsList" method="get">
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="search_box" />
-                        </div> <button type="submit" class="btn btn-default">搜索</button>
-                    </form>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a href="/GoodsManage/GoodsAdd">添加商品</a>
-                        </li>
-                        <li>
-                            <a href="/GoodsManage/TypeList">查询类别</a>
-                        </li>
+                </li>
+            }
+                                    }
+                                </ul>
+                                <form class="navbar-form navbar-left" role="search" action="/GoodsManage/GoodsList" method="get">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="search_box" />
+                                    </div> <button type="submit" class="btn btn-default">搜索</button>
+                                </form>
+                                <ul class="nav navbar-nav navbar-right">
+                                    <li>
+                                        <a href="/GoodsManage/GoodsAdd">添加商品</a>
+                                    </li>
+                                    <li>
+                                        <a href="/GoodsManage/TypeList">查询类别</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wal">
+                <div class="glist" v="@(_goodsInfoList.Count)">
+                    <ul>
+                        @{
+            if (_goodsInfoList != null && _goodsInfoList.Count > 0)
+            {
+                foreach (GoodsInfo item in _goodsInfoList)
+                {
+                    <li>
+                        <a href="/GoodsManage/GoodsUpdate?goods_Id=@(item.GoodsId)">
+                            <div><img src="@(item.GoodsImage)" /></div>
+                            <div>
+                                <div class="gName">@(item.GoodsName)</div>
+                                <div class="gPrice">￥@(item.GoodsPriceNow)</div>
+                            </div>
+                        </a>
+                    </li>
+                }
+            }
+            else
+            {
+                <li><span>暂无查询结果</span></li>
+            }
+                        }
+
                     </ul>
                 </div>
-            </nav>
-        </div>
-    </div>
-</div>
+                <div style="clear:both;"></div>
+            </div>
+        }
+        else
+        {
+            <span style="font-size:35px;color:red">禁止系统管理员访问本页！</span>
+        }
+    }
+    else
+    {
+            <span style="font-size:35px;color:red">请先<a href="/Manager/ManagerLogin">登录</a></span>
+        }
+}
 
-<div class="wal">
-    <div class="glist" v="@(_goodsInfoList.Count)">
-        <ul>
-            @{
-                if (_goodsInfoList != null && _goodsInfoList.Count>0) {
-                foreach (GoodsInfo item in _goodsInfoList) {
-            <li>
-                <a href="/GoodsManage/GoodsUpdate?goods_Id=@(item.GoodsId)">
-                    <div><img src="@(item.GoodsImage)" /></div>
-                    <div>
-                        <div class="gName">@(item.GoodsName)</div>
-                        <div class="gPrice">￥@(item.GoodsPriceNow)</div>
-                    </div>
-                </a>
-            </li>
-            }
-                }
-                else { 
-                    <li><span>暂无查询结果</span></li>
-                }
-            }
 
-        </ul>
-    </div>
-    <div style="clear:both;"></div>
-</div>
 
 
 

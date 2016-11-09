@@ -4,6 +4,15 @@
     ViewBag.Title = "UserManage";
     List<UserAcc> _UserAccList = (List<UserAcc>)ViewData["UserAcc"];
     List<UserInfo> _UserInfoList = (List<UserInfo>)ViewData["UserInfo"];
+    Layout = "~/Views/Shared/_Layout_back.cshtml";
+
+    string MangerAccount = "";
+
+    HttpCookie aCookie = Request.Cookies["ManagerAcc"];
+    if (aCookie != null)
+    {
+        MangerAccount = Server.HtmlEncode(aCookie.Value);
+    }
 }
 
 <style type="text/css">
@@ -28,6 +37,13 @@
             height: 200px;
             width: 18%;
         }
+        .imgDiv img{
+            margin-right: 60px;
+            /*border: 1px solid #f00;*/
+            float: left;
+            height: 140px;
+            width: 80%;
+        }
 
             .infoDiv{
                 padding-top:30px;
@@ -37,117 +53,139 @@
 
 </style>
 
-<h2>会员管理</h2>
+@{
+    if (!string.IsNullOrEmpty(MangerAccount))
+    {
+        if (!MangerAccount.Equals("admin"))
+        {
+            <h2>会员管理</h2>
 
-<div class="container">
-    <div class="row clearfix">
-        <div class="col-md-12 column">
-            <nav class="navbar navbar-default" role="navigation">
-                <div class="navbar-header">
-                    <form class="navbar-form navbar-left" role="search" action="/UserManage/UserManage" method="get">
-                        <div class="form-group">
-                            <input type="text" class="form-control" name="search_box"/>
-                        </div> <button type="submit" class="btn btn-default">查询</button>
-                    </form>
+            <div class="container">
+                <div class="row clearfix">
+                    <div class="col-md-12 column">
+                        <nav class="navbar navbar-default" role="navigation">
+                            <div class="navbar-header">
+                                <form class="navbar-form navbar-left" role="search" action="/UserManage/UserManage" method="get">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="search_box" />
+                                    </div> <button type="submit" class="btn btn-default">查询</button>
+                                </form>
+                            </div>
+
+                        </nav>
+                    </div>
                 </div>
-                
-            </nav>
-        </div>
-    </div>
-</div>
+            </div>
 
 
-<div class="wal">
-    <div class="ulist" v="@(_UserAccList.Count)">
-        <ul>
-            @{
-                if (_UserAccList != null && _UserAccList.Count > 0)
+            <div class="wal">
+                <div class="ulist" v="@(_UserAccList.Count)">
+                    <ul>
+                        @{
+            if (_UserAccList != null && _UserAccList.Count > 0)
+            {
+                int i = 0;
+                foreach (UserAcc item in _UserAccList)
                 {
-                    int i = 0;
-                    foreach (UserAcc item in _UserAccList)
+                    if (_UserInfoList != null && _UserInfoList.Count > 0)
                     {
-                        if(_UserInfoList != null &&  _UserInfoList.Count > 0){
-                            UserInfo infoItem = _UserInfoList[i];
+                        UserInfo infoItem = _UserInfoList[i];
                         <li>
                             <div>
                                 <div class="imgDiv">
                                     @{
-                            if (!string.IsNullOrEmpty(infoItem.UserImage)) { 
-                                        <img src="@(infoItem.UserImage)" />
+                        if (!string.IsNullOrEmpty(infoItem.UserImage))
+                        {
+                            <img src="@(infoItem.UserImage)" />
+                        }
                                     }
-                                    }
-                                
+
                                 </div>
                                 <div class="infoDiv">
                                     <strong>@(item.UserName)</strong>&nbsp;&nbsp;&nbsp;&nbsp;
                                     @{
-                                        if (infoItem.UserGender == false)
-                                        {
-                                            <strong>男&nbsp;&nbsp;&nbsp;&nbsp;</strong> 
+                        if (infoItem.UserGender == false)
+                        {
+                            <strong>男&nbsp;&nbsp;&nbsp;&nbsp;</strong>
+                        }
+                        else if (infoItem.UserGender == true)
+                        {
+                            <strong>女&nbsp;&nbsp;&nbsp;&nbsp;</strong>
+                        }
+                        if (item.UserIsForbided == true)
+                        {
+                            <form action="/UserManage/UserManage" method="post">
+                                <input name="user_id" value="@(item.UserId.ToString())" style="display:none" />
+                                <input type="text" name="id" value="0" style="display:none;" />
+                                <input type="submit" value="解锁会员" />
+                            </form>
+                        }
+                        else if (item.UserIsForbided == false)
+                        {
+                            <form action="/UserManage/UserManage" method="post">
+                                <input name="user_id" value="@(item.UserId.ToString())" style="display:none" />
+                                <input type="text" name="id" value="1" style="display:none;" />
+                                <input type="submit" value="锁定会员" />
+                            </form>
+                        }
                                     }
-                                    else if (infoItem.UserGender == true)
-                                    {
-                                        <strong>女&nbsp;&nbsp;&nbsp;&nbsp;</strong>
-                                    }
-                                        if (item.UserIsForbided == true)
-                                        {
-                                            <form action="/UserManage/UserManage" method="post">
-                                                <input name="user_id" value="@(item.UserId.ToString())" style="display:none" />
-                                                <input type="text" name="id" value="0" style="display:none;"/>
-                                                <input type="submit" value="解锁会员" />
-                                            </form>
-                                        }
-                                        else if (item.UserIsForbided == false)
-                                        {
-                                <form action="/UserManage/UserManage" method="post">
-                                    <input name="user_id" value="@(item.UserId.ToString())" style="display:none"/>
-                                    <input type="text" name="id" value="1" style="display:none;" />
-                                    <input type="submit" value="锁定会员"/>
-                                    </form>
-                            }
-                            }
-                                  <br/>
-                                    <span>真实姓名：@(infoItem.UserRealname)</span><br/>
-                                    <span>电话：@(infoItem.UserPhone)</span><br/>
+                                    <br />
+                                    <span>真实姓名：@(infoItem.UserRealname)</span><br />
+                                    <span>电话：@(infoItem.UserPhone)</span><br />
                                     <span>邮箱：@(item.UserEmail)</span>
                                 </div>
                             </div>
-                        </li><li style="clear:both;"></li>
-                            i++;
-                        }
-                        else
-                        {
-                            <li>
-                              <strong>@(item.UserName)</strong>&nbsp;&nbsp;&nbsp;&nbsp;
+                        </li>
+                        <li style="clear:both;"></li>
+                        i++;
+                    }
+                    else
+                    {
+                        <li>
+                            <strong>@(item.UserName)</strong>&nbsp;&nbsp;&nbsp;&nbsp;
                             @{
-                            if (item.UserIsForbided == true)
-                            {
-                                <form action="/UserManage/UserManage" method="post">
-                                    <input name="user_id" value="@(item.UserId.ToString())" style="display:none" />
-                                    <input type="text" name="id" value="0" style="display:none;" /><br />
-                                    <input type="submit" value="解锁会员" />
-                                </form>
-                            }
-                            else if (item.UserIsForbided == false)
-                            {
-                                <form action="/UserManage/UserManage" method="post">
-                                    <input name="user_id" value="@(item.UserId.ToString())" style="display:none" />
-                                    <input type="text" name="id" value="1" style="display:none;" /><br/>
-                                    <input type="submit" value="锁定会员"/>
-                                </form>
-                            }
-                            }</li><li style="clear:both;"></li>
+                        if (item.UserIsForbided == true)
+                        {
+                            <form action="/UserManage/UserManage" method="post">
+                                <input name="user_id" value="@(item.UserId.ToString())" style="display:none" />
+                                <input type="text" name="id" value="0" style="display:none;" /><br />
+                                <input type="submit" value="解锁会员" />
+                            </form>
                         }
+                        else if (item.UserIsForbided == false)
+                        {
+                            <form action="/UserManage/UserManage" method="post">
+                                <input name="user_id" value="@(item.UserId.ToString())" style="display:none" />
+                                <input type="text" name="id" value="1" style="display:none;" /><br />
+                                <input type="submit" value="锁定会员" />
+                            </form>
+                        }
+                            }
+                        </li>
+                        <li style="clear:both;"></li>
                     }
                 }
-                else
-                {
-                    <li><span>暂无查询结果。。。</span></li>
-                }
+            }
+            else
+            {
+                <li><span>暂无查询结果。。。</span></li>
+            }
+                        }
+
+                    </ul>
+
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+        }
+        else
+        {
+            <span style="font-size:35px;color:red">禁止系统管理员访问本页！</span>
+        }
+    }
+    else
+    {
+        <span style="font-size:35px;color:red">请先<a href="/Manager/ManagerLogin">登录</a></span>
+    }
 }
 
-        </ul>
-        
-    </div>
-    <div style="clear:both;"></div>
-</div>

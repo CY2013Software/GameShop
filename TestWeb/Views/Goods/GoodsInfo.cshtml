@@ -1,9 +1,23 @@
-﻿@using shop.Models;
+﻿
+@using shop.Models;
+@using DAL;
 @{
     ViewBag.Title = "GoodsInfo";
     List<GoodsInfo> _GoodsInfoList = (List<GoodsInfo>)ViewData["GoodsInfo"];
     List<GoodsRemark> _GoodsRemarkList = (List<GoodsRemark>)ViewData["GoodsRemark"];
     List<UserAcc> _UserAccList = (List<UserAcc>)ViewData["UserAcc"];
+
+    string UserEmail = "";
+    HttpCookie aCookie = Request.Cookies["UserEmail"];
+    if (aCookie != null)
+    {
+        UserEmail = Server.HtmlEncode(aCookie.Value);
+    }
+    int userId = 0;
+    if (!string.IsNullOrEmpty(UserEmail))
+    {
+        userId = new UserInfoDAL().UserId(UserEmail);
+    }
 }
 
 <script type="text/javascript">
@@ -23,6 +37,7 @@
             document.getElementById("orderBtn").disabled = false;
             document.getElementById("purchaseBtn").disabled = false;
         }
+
         document.getElementById("orderNum").value = num;
         document.getElementById("purchaseNum").value = num;
     }
@@ -36,9 +51,43 @@
         document.getElementById("goods_num").value = parseInt(numb) + parseInt(1);
         checkNum();
     }
-    function purchase() {
-        //设置购买时间
 
+    function check() {
+        if (document.getElementById("status_number").value == 0) {
+            alert("商品下架，无法购买！");
+            return false;
+        }
+        checkNum();
+        document.getElementById("goods_order").submit();
+    }
+
+    function getNowFormatDate() {
+        var date = new Date();
+        var seperator1 = "-";
+        var seperator2 = ":";
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+        var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+                + " " + date.getHours() + seperator2 + date.getMinutes()
+                + seperator2 + date.getSeconds();
+        return currentdate;
+    }
+
+    function purchase() {
+        if (document.getElementById("status_number").value == 0) {
+            alert("商品下架，无法购买！");
+            return false;
+        }
+        //设置购买时间
+        document.getElementById("purchaseTime").value = getNowFormatDate();
+
+        checkNum();
         document.getElementById("goods_purchase").submit();
     }
 </script>
@@ -83,6 +132,7 @@
     <div class="ulist">
         <ul>
             @{
+                
                 foreach (GoodsInfo item in _GoodsInfoList)
                 {
                     <li>
@@ -99,7 +149,7 @@
                     }
                      }
                                 <br /><br />
-                                <div style="width:400px;height:80px"><strong><p>@(item.GoodsIntro)</p></strong></div>
+                                <div style="width:400px;height:80px"><strong>@(item.GoodsIntro)</strong></div>
                       @{
                     decimal flag = new decimal(0);
                     if (item.GoodsPriceOriginal != flag)
@@ -117,19 +167,30 @@
                                 <input type="button" id="add" value="+" onclick="javascript:addBtn()" />
                                 <br/><br />
 
-                                <form action="/OrderForm/GoodsInfo" method="post" style="float:left;margin-left:20px">
-                                    <input name="UserId" value="" style="display:none" />
+                                <form id="goods_order" action="/Goods/GoodsInfo" method="post" style="float:left;margin-left:20px">
+                                    <input name="UserId" value="@(userId)" style="display:none" />
                                     <input name="GoodsId" value="@(item.GoodsId)" style="display:none" />
                                     <input id="orderNum" name="GoodsPurchaseQuantity" style="display:none" />
-                                    <input type="submit" id="orderBtn" value="加入购物车" style="border: 1px solid green; background: red; color: #fff;" />
+                                    
+                        <input type="button" id="orderBtn" value="加入购物车" style="border: 1px solid green; background: red; color: #fff;" onclick="javascript: check()"/>
                                 </form>
+                                @{
+                    if (item.GoodsStatus == true)
+                    {
+                        <input id="status_number" value="1" style="display:none"/>
+                    }
+                    else
+                    {
+                        <input id="status_number" value="0" style="display:none" />
+                    }
+}
                                 <form id="goods_purchase" action="/OrderForm/OrderForm" method="post" style="float:left;margin-left:20px">
-                                    <input name="UserId" value="" style="display:none" />
+                                    <input name="UserId" value="@(userId)" style="display:none" />
                                     <input name="GoodsId" value="@(item.GoodsId)" style="display:none" />
                                     <input id="purchaseNum" name="GoodsPurchaseQuantity" style="display:none" />
                                     <input id="purchaseTime" name="GoodsPurchaseTime" style="display:none" />
                                     <input name="UserOrderFormStatusId" value="1" style="display:none" />
-                                    <input type="button" id="purchaseBtn" value="直接购买" onclick="javascript:purchase()" style="border: 1px solid green; background: red; color: #fff;" />
+                        <input type="button" id="purchaseBtn" value="直接购买" onclick="javascript:purchase()" style="border: 1px solid green; background: red; color: #fff;" />
                                 </form>
                             </div>
                     </li>
@@ -152,7 +213,7 @@
                 foreach (GoodsRemark item in _GoodsRemarkList)
                 {
                     UserAcc userItem = _UserAccList[i];
-
+                    if (userItem.UserIsForbided == false) { 
                     <li>
                         <div>
                             <span style="color:red">@(userItem.UserName)：</span>
@@ -181,6 +242,7 @@
                     }
                         }
                     </li>
+            }
                     <li style="clear:both;"></li>
                     i++;
                 }

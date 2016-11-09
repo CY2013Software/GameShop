@@ -5,6 +5,13 @@
     string UserEmail = (string)ViewData["Email"];
     string UserPwdHint = (string)ViewData["PwdHint"];
     string StatusId = (string)ViewData["StatusId"];
+
+    string _userEmail = "";
+    HttpCookie aCookie = Request.Cookies["UserEmail"];
+    if (aCookie != null)
+    {
+        _userEmail = Server.HtmlEncode(aCookie.Value);
+    }
 }
 
 <script type="text/javascript">
@@ -51,7 +58,7 @@
             return false;
         }
         
-        if (confPwd == null || conf == "") {
+        if (confPwd == null || confPwd == "") {
             alert("重复密码不能为空");
             return false;
         }
@@ -108,9 +115,7 @@
 @{
     if (string.IsNullOrEmpty(operationId))
     {
-        ////////////////
-        ////////////////获取不到cookie中的email信息则返回登录页
-        ///////////////
+        if (!string.IsNullOrEmpty(_userEmail)) { 
         
         if (!string.IsNullOrEmpty(StatusId) && StatusId.Equals("-3"))
         {
@@ -118,14 +123,22 @@
         }
         //从cookie中获取email
         <form id="update_pwd_form" action="/User/PwdChange" method="post">
-            <input name="Email" value="" style="display:none" />
+            <input name="Email" value="@(_userEmail)" style="display:none" />
             <label>原&nbsp;密&nbsp;码：</label><input type="password" id="ori_pwd" name="OriginalPwd" /><br/>
             <label>新&nbsp;密&nbsp;码：</label><input type="password" id="new_pwd" name="NewPwd" /><br/>
             <label>重复密码：</label><input type="password" id="conf_pwd" /><br/>
             <input type="button" value="确定" onclick="javascript:checkPwd()" />
         </form>
-    }else if(operationId.Equals("0")){
-        if (!string.IsNullOrEmpty(StatusId) && StatusId.Equals("-1")) { 
+        }
+        else
+        {
+            <h2 style="color:red">请先<a href="/User/Login">登录</a></h2>
+        }
+    }
+    else if (operationId.Equals("0"))
+    {
+        if (!string.IsNullOrEmpty(StatusId) && StatusId.Equals("-1"))
+        {
             <span style="color:red">此邮箱不存在！</span>
         }
         <form id="email_form" action="/User/PwdChange" method="post">
@@ -144,7 +157,7 @@
         <form id="reset_pwd_form" action="/User/PwdChange" method="post">
             <input name="id" value="1" style="display:none" />
             <input name="Email" value="@(UserEmail)" style="display:none" />
-            <label>密码提示：</label><input name="PwdHint" value="@(UserPwdHint)" disabled/><br/>
+            <label>密码提示：</label><input name="PwdHint" value="@(UserPwdHint)"/><br/>
             <label>提示答案：</label><input id="hint_answer" name="PwdHintAnswer" /><br />
             <label>新&nbsp;&nbsp;密&nbsp;&nbsp;码：</label><input type="password" id="new_pwd" name="NewPwd" /><br />
             <label>重复密码：</label><input type="password" id="conf_pwd"/><br />
