@@ -211,7 +211,6 @@
     <Content Include="Views\Manager\ManagerAdd.cshtml" />
     <Content Include="Views\Goods\GoodsList.cshtml" />
     <Content Include="Views\Goods\GoodsInfo.cshtml" />
-    <Content Include="Views\OrderForm\OrderForm.cshtml" />
     <Content Include="Views\User\Login.cshtml" />
     <Content Include="Views\User\Register.cshtml" />
     <Content Include="Views\User\PwdChange.cshtml" />
@@ -220,6 +219,8 @@
     <Content Include="Views\Shared\_Layout_back.cshtml" />
     <Content Include="Views\OrderForm\PostInfo.cshtml" />
     <Content Include="Views\OrderForm\PayMent.cshtml" />
+    <Content Include="Views\OrderForm\OrderFormList.cshtml" />
+    <Content Include="Views\OrderForm\Remark.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DAL\DAL.csproj">

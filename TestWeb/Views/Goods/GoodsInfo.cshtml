@@ -61,23 +61,24 @@
         document.getElementById("goods_order").submit();
     }
 
-    function getNowFormatDate() {
-        var date = new Date();
-        var seperator1 = "-";
-        var seperator2 = ":";
-        var month = date.getMonth() + 1;
-        var strDate = date.getDate();
-        if (month >= 1 && month <= 9) {
-            month = "0" + month;
-        }
-        if (strDate >= 0 && strDate <= 9) {
-            strDate = "0" + strDate;
-        }
-        var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
-                + " " + date.getHours() + seperator2 + date.getMinutes()
-                + seperator2 + date.getSeconds();
-        return currentdate;
-    }
+    //返回当前时间
+    //function getNowFormatDate() {
+    //    var date = new Date();
+    //    var seperator1 = "-";
+    //    var seperator2 = ":";
+    //    var month = date.getMonth() + 1;
+    //    var strDate = date.getDate();
+    //    if (month >= 1 && month <= 9) {
+    //        month = "0" + month;
+    //    }
+    //    if (strDate >= 0 && strDate <= 9) {
+    //        strDate = "0" + strDate;
+    //    }
+    //    var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+    //            + " " + date.getHours() + seperator2 + date.getMinutes()
+    //            + seperator2 + date.getSeconds();
+    //    return currentdate;
+    //}
 
     function purchase() {
         if (document.getElementById("status_number").value == 0) {
@@ -85,7 +86,7 @@
             return false;
         }
         //设置购买时间
-        document.getElementById("purchaseTime").value = getNowFormatDate();
+        //document.getElementById("purchaseTime").value = getNowFormatDate();
 
         checkNum();
         document.getElementById("goods_purchase").submit();
@@ -168,12 +169,24 @@
                                 <br/><br />
 
                                 <form id="goods_order" action="/Goods/GoodsInfo" method="post" style="float:left;margin-left:20px">
+                                    <input name="id" value="0" style="display:none" />
                                     <input name="UserId" value="@(userId)" style="display:none" />
                                     <input name="GoodsId" value="@(item.GoodsId)" style="display:none" />
                                     <input id="orderNum" name="GoodsPurchaseQuantity" style="display:none" />
-                                    
-                        <input type="button" id="orderBtn" value="加入购物车" style="border: 1px solid green; background: red; color: #fff;" onclick="javascript: check()"/>
-                                </form>
+                                    @{
+                    if (userId > 0)
+                    {
+                        <input type="button" id="orderBtn" value="加入购物车" style="border: 1px solid green; background: red; color: #fff;" onclick="javascript: check()" />
+                    }
+                    else
+                    {
+                                <a href="/User/Login">
+                                    <input type="button" id="orderBtn" value="加入购物车" style="border: 1px solid green; background: red; color: #fff;" />
+                                    </a>
+                                    }
+                                    }
+
+</form>
                                 @{
                     if (item.GoodsStatus == true)
                     {
@@ -184,13 +197,24 @@
                         <input id="status_number" value="0" style="display:none" />
                     }
 }
-                                <form id="goods_purchase" action="/OrderForm/OrderForm" method="post" style="float:left;margin-left:20px">
+                                <form id="goods_purchase" action="/Goods/GoodsInfo" method="post" style="float:left;margin-left:20px">
+                                    <input name="id" value="1" style="display:none" />
                                     <input name="UserId" value="@(userId)" style="display:none" />
                                     <input name="GoodsId" value="@(item.GoodsId)" style="display:none" />
                                     <input id="purchaseNum" name="GoodsPurchaseQuantity" style="display:none" />
-                                    <input id="purchaseTime" name="GoodsPurchaseTime" style="display:none" />
-                                    <input name="UserOrderFormStatusId" value="1" style="display:none" />
+                                    @{
+                    if (userId > 0)
+                    {
                         <input type="button" id="purchaseBtn" value="直接购买" onclick="javascript:purchase()" style="border: 1px solid green; background: red; color: #fff;" />
+                    }
+                    else
+                    {
+                        <a href="/User/Login">
+                            <input type="button" id="purchaseBtn" value="直接购买" style="border: 1px solid green; background: red; color: #fff;" />
+                          </a>
+                    }
+}
+                                    
                                 </form>
                             </div>
                     </li>

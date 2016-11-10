@@ -1,0 +1,61 @@
+﻿@using shop.Models;
+@{
+    ViewBag.Title = "Remark";
+    string id = (string)ViewData["Id"];
+    GoodsRemark _goodsRemark = new GoodsRemark();
+    _goodsRemark = (GoodsRemark)ViewData["Remark"];
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string UserEmail = "";
+    HttpCookie aCookie = Request.Cookies["UserEmail"];
+    if (aCookie != null)
+    {
+        UserEmail = Server.HtmlEncode(aCookie.Value);
+    }
+}
+
+<script type="text/javascript">
+    function check() {
+        var val = document.getElementById("remark_info").value;
+        if (val == null || val == "") {
+            alert("评论内容不能为空");
+            return false;
+        }
+
+        document.getElementById("remark_form").submit();
+    }
+</script>
+
+@{
+    if (!string.IsNullOrEmpty(UserEmail))
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            if (_goodsRemark.GoodsId > 0)
+            {
+                <h2>商品评论</h2>
+                <form id="remark_form" action="/OrderForm/Remark" method="post">
+                    <input name="UserId" value="@(_goodsRemark.UserId)" style="display:none"/>
+                    <input name="GoodsId" value="@(_goodsRemark.GoodsId)" style="display:none" />
+                    <label>请输入评论信息：</label><br/><textarea id="remark_info" class="form-control" form="remark_form" name="GoodsRemarkFirst" cols=40 rows=4 wrap="soft"></textarea>
+                    <input type="button" value="确定" onclick="javascript:check()"/>
+                </form>
+            }
+            else
+            {
+                <h2 style="color:red">发生了错误...</h2>
+            }
+        }
+        else
+        {
+            <h2>评论成功！</h2>
+        }
+    }
+    else
+    {
+        <h2 style="color:red">请先<a href="/User/Login">登录</a></h2>
+    }
+}
+
+
+

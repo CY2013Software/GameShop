@@ -1,4 +1,5 @@
-﻿using System;
+﻿using shop.Models;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -41,6 +42,24 @@ namespace DAL
             string goodsId = "Select goods_id from Goods_Remark where goods_remark_id = '" + _goodsRemarkId + "'";
             DataTable goodsIdTable = _sqlHelper.ExecuteDataTable(goodsId);
             return goodsIdTable;
+        }
+
+        //向数据库中添加评论信息
+        public int InsertRemark( GoodsRemark _goodsRemark) {
+            int rows = 0;
+            DateTime now = DateTime.Now;
+            string remarkCheck = "Select goods_remark_id from Goods_Remark where goods_id = '" + _goodsRemark.GoodsId + "' and user_id = '"+ _goodsRemark.UserId +"'";
+            DataTable remarkCheckTable = _sqlHelper.ExecuteDataTable(remarkCheck);
+            if (remarkCheckTable.Rows.Count > 0)
+            {
+                string addRemark = "Update Goods_Remark set goods_remark_add = '" + _goodsRemark.GoodsRemarkFirst + "',goods_remark_addTime = '" + now + "' where goods_id = '" + _goodsRemark.GoodsId + "' and user_id = '" + _goodsRemark.UserId + "'";
+                rows = _sqlHelper.ExecuteNonQuery(addRemark);
+            }
+            else {
+                string insertRemark = "Insert into Goods_Remark(goods_id,user_id,goods_remark_first ,goods_remark_firstTime) values('" + _goodsRemark.GoodsId + "','"+ _goodsRemark.UserId +"','"+ _goodsRemark.GoodsRemarkFirst +"','"+ now +"')";
+                rows = _sqlHelper.ExecuteNonQuery(insertRemark);
+            }
+            return rows;
         }
     }
 }

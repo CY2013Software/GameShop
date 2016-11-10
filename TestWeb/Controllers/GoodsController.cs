@@ -156,8 +156,8 @@ namespace TestWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult GoodsInfo(UserCart _userCart) {
-            if (_userCart.UserId > 0) {
+        public ActionResult GoodsInfo(string id,UserCart _userCart) {
+            if (!string.IsNullOrEmpty(id) && id.Equals("0")) {
                 int rows = new UserCartDAL().InsertCart(_userCart);
                 if (rows > 0)
                 {
@@ -167,6 +167,17 @@ namespace TestWeb.Controllers
                     return RedirectToAction("Cart", "OrderForm", new { id = (-1).ToString() });         //商品数量过多
                 }else{
                     return RedirectToAction("Cart", "OrderForm", new { id = 0.ToString()});           //购物车已满
+                }
+            }
+            else if (!string.IsNullOrEmpty(id) && id.Equals("1"))
+            {
+                int rows = new OrderFormDAL().addOrderForm(_userCart);                               //存入订单表，并返回订单ID
+                if (rows > 0)
+                {
+                    return RedirectToAction("PayMent", "OrderForm", new { orderId = rows.ToString() });    //进入支付页面
+                }
+                else {
+                    return RedirectToAction("GoodsInfo", "Goods", new { goods_id = _userCart.GoodsId.ToString() });   //直接购买失败
                 }
             }
             else { 

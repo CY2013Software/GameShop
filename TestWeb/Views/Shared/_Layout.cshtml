@@ -23,9 +23,11 @@
         }
 
         string userName = "";
+        string userId = "";
         if (!string.IsNullOrEmpty(UserEmail)) {
             string userNameQuery = "Select user_name from User_Acc where user_email = '" + UserEmail + "'";
             userName = new SqlHelper().ExecuteDataTable(userNameQuery).Rows[0]["user_name"].ToString();
+            userId = new UserInfoDAL().UserId(UserEmail).ToString();
         }
     }
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -46,7 +48,7 @@
                             <li><a>您好，@(userName)</a></li>
                         <li><a href="/User/UserInfos?email=@(UserEmail)">个人资料</a></li>
                         <li><a href="/OrderForm/Cart">购物车</a></li>
-                        <li><a href="">我的订单</a></li>
+                        <li><a href="/OrderForm/OrderFormList?userId=@(userId)">我的订单</a></li>
                     <li><a href="/User/Logout">退出</a></li>
                         }
                         else
