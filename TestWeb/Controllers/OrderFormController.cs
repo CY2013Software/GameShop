@@ -66,7 +66,7 @@ namespace TestWeb.Controllers
         [HttpPost]
         public ActionResult OrderFormList(string id,UserOrderForm _orderForm) { 
              if(!string.IsNullOrEmpty(id)){
-                 int rows = new OrderFormDAL().ChangeStatus(id, _orderForm.UserOrderFormId);
+                 int rows = new OrderFormDAL().ChangeStatus(id, _orderForm);
              }
              return RedirectToAction("OrderFormList", "OrderForm", new { userId = _orderForm.UserId.ToString() });
         }

@@ -177,7 +177,7 @@ namespace TestWeb.Controllers
                     return RedirectToAction("PayMent", "OrderForm", new { orderId = rows.ToString() });    //进入支付页面
                 }
                 else {
-                    return RedirectToAction("GoodsInfo", "Goods", new { goods_id = _userCart.GoodsId.ToString() });   //直接购买失败
+                    return RedirectToAction("GoodsInfo", "Goods", new { goods_id = _userCart.GoodsId.ToString() });   //直接购买失败，刷新页面
                 }
             }
             else { 
